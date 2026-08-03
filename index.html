@@ -834,6 +834,13 @@
     color:var(--teal); cursor:pointer; margin:6px 0 2px; transition:background .15s;
   }
   .plate-pm-btn:hover{ background:rgba(73,194,166,.26); }
+  .plate-pm-date{ display:flex; align-items:center; gap:6px; margin:4px 0 2px; }
+  .plate-pm-date-label{ font-size:11px; color:var(--text-faint); white-space:nowrap; }
+  .plate-pm-date-input{
+    flex:1; font-family:var(--mono); font-size:11.5px; padding:5px 6px; border-radius:6px;
+    border:1px solid var(--border); background:var(--bg-raised); color:var(--text); cursor:pointer;
+  }
+  .plate-pm-date-input:focus{ border-color:var(--teal); outline:none; }
 
   .note-row{ display:flex; gap:6px; align-items:flex-start; }
   .note-area{
@@ -2188,7 +2195,12 @@ function renderPlate(item){
       <span class="maint-dot"></span>
       <span class="maint-txt">${maintLabel} <span class="maint-sub">· ${maintSub}</span></span>
     </div>
-    ${(maint.state === 'overdue' || maint.state === 'due-soon') && d.pm_schedule ? `<div class="plate-pm-btn" data-action="pm-complete" data-id="${escapeHtml(item.id)}">✓ Mark PM Complete</div>` : ''}
+    ${(maint.state === 'overdue' || maint.state === 'due-soon' || maint.state === 'unknown') ? `
+      <div class="plate-pm-btn" data-action="pm-complete" data-id="${escapeHtml(item.id)}">✓ Mark PM Complete</div>
+      <div class="plate-pm-date">
+        <span class="plate-pm-date-label">Last serviced:</span>
+        <input type="date" class="plate-pm-date-input" data-action="set-last-serviced" data-id="${escapeHtml(item.id)}" value="${escapeHtml(d.last_serviced || '')}">
+      </div>` : ''}
     <div class="status-row">
       ${STATUS_DEFS.map(s => `<div class="status-btn ${st.status === s.key ? 'sel-' + s.key : ''}" data-action="status" data-id="${escapeHtml(item.id)}" data-value="${s.key}">${s.label}</div>`).join('')}
     </div>
@@ -3360,6 +3372,21 @@ document.addEventListener('click', (e) => {
 
   const completeBtn = e.target.closest('[data-action="pm-complete"]');
   if(completeBtn){ completePm(completeBtn.dataset.id); return; }
+});
+document.addEventListener('change', (e) => {
+  const setLastServiced = e.target.closest('[data-action="set-last-serviced"]');
+  if(setLastServiced){
+    const id = setLastServiced.dataset.id;
+    const val = setLastServiced.value;
+    if(val){
+      overrides[id] = { ...(overrides[id] || {}), last_serviced: val };
+      saveOverrides();
+      if(currentView === 'equipment') render();
+      if(currentView === 'dashboard') renderDashboard();
+      updatePmBadges();
+    }
+    return;
+  }
 });
 document.addEventListener('keydown', (e) => {
   if(e.key === 'Escape' && document.getElementById('pmDetailOverlay').style.display !== 'none'){
