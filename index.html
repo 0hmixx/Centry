@@ -1599,6 +1599,14 @@ const OVERRIDES_KEY = 'equipment-overrides';
 const EDITABLE_FIELDS = [
   { key: 'name', label: 'Equipment name' },
   { key: 'code', label: 'Equipment code' },
+  { key: 'section', label: 'Category', type: 'select', options: SECTION_ORDER.map(s => ({ value: s, label: SECTION_LABEL[s] || s })) },
+  { key: 'tower', label: 'Tower / Location', type: 'select', options: [
+    { value: 'Tower 1', label: 'Tower 1' },
+    { value: 'Tower 2', label: 'Tower 2' },
+    { value: 'Tower 3', label: 'Tower 3' },
+    { value: 'Tower 4', label: 'Tower 4' },
+    { value: 'Common', label: 'Common / Shared' },
+  ]},
   { key: 'brand', label: 'Brand' },
   { key: 'type', label: 'Type' },
   { key: 'capacity_hp', label: 'Capacity (HP)' },
@@ -2123,12 +2131,17 @@ function renderPlate(item){
       </div>
       <input class="edit-field name-field" data-field="name" value="${escapeHtml(d.name)}" placeholder="Equipment name">
       <div class="edit-grid">
-        ${EDITABLE_FIELDS.filter(f => f.key !== 'name').map(f => `
-          <label>
+        ${EDITABLE_FIELDS.filter(f => f.key !== 'name').map(f => {
+          if(f.type === 'select'){
+            return `<label><span class="k">${f.label}</span><select class="edit-field" data-field="${f.key}">
+              ${f.options.map(o => `<option value="${escapeHtml(o.value)}" ${d[f.key] === o.value ? 'selected' : ''}>${escapeHtml(o.label)}</option>`).join('')}
+            </select></label>`;
+          }
+          return `<label>
             <span class="k">${f.label}</span>
             <input class="edit-field" type="${f.type === 'date' ? 'date' : 'text'}" data-field="${f.key}" value="${escapeHtml(d[f.key])}">
-          </label>
-        `).join('')}
+          </label>`;
+        }).join('')}
       </div>
       <div class="edit-actions">
         <button class="cancel-btn" data-action="edit-cancel" data-id="${escapeHtml(item.id)}">Cancel</button>
