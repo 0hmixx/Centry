@@ -2040,7 +2040,7 @@ async function logHistoryEntry(id){
 function scopeFilter(item){
   const d = getData(item);
   if(activeTower !== 'all' && towerOf(d) !== activeTower) return false;
-  if(activeCategory !== 'all' && item.section !== activeCategory) return false;
+  if(activeCategory !== 'all' && d.section !== activeCategory) return false;
   if(searchTerm){
     const hay = [d.name, d.code, d.brand, d.model, d.type, d.serial]
       .join(' ').toLowerCase();
@@ -2254,7 +2254,7 @@ function renderSections(){
   const order = activeCategory === 'all' ? SECTION_ORDER : [activeCategory];
   let html = '';
   order.forEach(sec => {
-    const items = filtered.filter(it => it.section === sec);
+    const items = filtered.filter(it => getData(it).section === sec);
     if(items.length === 0) return;
     const isCollapsed = collapsedSections.has(sec);
     html += `
@@ -2353,7 +2353,7 @@ function renderProfileHeader(item){
     </div>
     <div class="profile-heading">
       <div class="p-name">${escapeHtml(d.name)}</div>
-      <div class="p-id">${escapeHtml(d.code || item.id)} · ${escapeHtml(item.section)}</div>
+      <div class="p-id">${escapeHtml(d.code || item.id)} · ${escapeHtml(d.section)}</div>
       <div class="profile-badges">
         <div class="status-pill pill-${st.status}" data-action="cycle-status" data-id="${escapeHtml(item.id)}" style="cursor:pointer;">${statusLabel}</div>
         <div class="crit-badge crit-${escapeHtml(p.criticality)}" data-action="cycle-criticality" data-id="${escapeHtml(item.id)}" title="Click to change criticality">${escapeHtml(p.criticality)}</div>
@@ -2419,7 +2419,7 @@ function renderProfileOverview(item){
     <div class="profile-info-grid">
       <div class="pi-item"><span class="k">Tower</span><span class="v">${escapeHtml(towerOf(d))}</span></div>
       <div class="pi-item"><span class="k">Location</span><span class="v">${escapeHtml(p.location || '—')}</span></div>
-      <div class="pi-item"><span class="k">Category</span><span class="v">${escapeHtml(item.section)}</span></div>
+      <div class="pi-item"><span class="k">Category</span><span class="v">${escapeHtml(d.section)}</span></div>
       <div class="pi-item"><span class="k">Brand</span><span class="v">${escapeHtml(d.brand || '—')}</span></div>
       <div class="pi-item"><span class="k">Model</span><span class="v">${escapeHtml(d.model || '—')}</span></div>
       <div class="pi-item"><span class="k">Serial Number</span><span class="v">${escapeHtml(d.serial || '—')}</span></div>
@@ -3756,7 +3756,7 @@ function exportExcel(){
     const st = getStatus(item.id);
     const maint = getMaintenanceInfo(item);
     return {
-      'Category': SECTION_LABEL[item.section] || item.section,
+      'Category': SECTION_LABEL[d.section] || d.section,
       'Tower': towerOf(d),
       'Code': d.code || item.id,
       'Name': d.name,
