@@ -828,6 +828,12 @@
   .maint-badge.maint-due-soon{ border-color: var(--amber-dim); }
   .maint-badge.maint-ok .maint-dot{ background: var(--teal); }
   .maint-sub{ color: var(--text-faint); font-family: var(--mono); font-size: 10px; }
+  .plate-pm-btn{
+    width:100%; text-align:center; font-family:var(--display); font-weight:700; font-size:12.5px;
+    padding:8px 0; border-radius:8px; border:1px solid var(--teal); background:rgba(73,194,166,.12);
+    color:var(--teal); cursor:pointer; margin:6px 0 2px; transition:background .15s;
+  }
+  .plate-pm-btn:hover{ background:rgba(73,194,166,.26); }
 
   .note-row{ display:flex; gap:6px; align-items:flex-start; }
   .note-area{
@@ -1168,11 +1174,11 @@
 
     <div class="dash-section dash-cols">
       <div>
-        <div class="dash-section-head"><h2>Critical Alerts</h2><span class="sub">equipment out of service — click to open in Equipment Monitoring</span></div>
+        <div class="dash-section-head" style="flex-direction:column; align-items:flex-start;"><h2>Critical Alerts</h2><span class="sub">equipment out of service — click to open in Equipment Monitoring</span></div>
         <div class="alerts-panel" id="alertsPanel"></div>
       </div>
       <div>
-        <div class="dash-section-head"><h2>Needs Attention</h2><span class="sub">equipment requiring attention — click to open in Equipment Monitoring</span></div>
+        <div class="dash-section-head" style="flex-direction:column; align-items:flex-start;"><h2>Needs Attention</h2><span class="sub">equipment requiring attention — click to open in Equipment Monitoring</span></div>
         <div class="alerts-panel" id="attentionPanel"></div>
       </div>
     </div>
@@ -2182,6 +2188,7 @@ function renderPlate(item){
       <span class="maint-dot"></span>
       <span class="maint-txt">${maintLabel} <span class="maint-sub">· ${maintSub}</span></span>
     </div>
+    ${(maint.state === 'overdue' || maint.state === 'due-soon') && d.pm_schedule ? `<div class="plate-pm-btn" data-action="pm-complete" data-id="${escapeHtml(item.id)}">✓ Mark PM Complete</div>` : ''}
     <div class="status-row">
       ${STATUS_DEFS.map(s => `<div class="status-btn ${st.status === s.key ? 'sel-' + s.key : ''}" data-action="status" data-id="${escapeHtml(item.id)}" data-value="${s.key}">${s.label}</div>`).join('')}
     </div>
