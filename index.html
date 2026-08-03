@@ -386,10 +386,11 @@
 
   /* two-column layout */
   .dash-cols{ display:grid; grid-template-columns: 1.3fr 1fr; gap: 16px; align-items:stretch; }
+  .dash-cols > div{ display:flex; flex-direction:column; }
   @media (max-width: 860px){ .dash-cols{ grid-template-columns: 1fr; } }
 
   /* Critical alerts */
-  .alerts-panel{ background: var(--panel); border:1px solid var(--border); border-radius:11px; padding: 6px; }
+  .alerts-panel{ background: var(--panel); border:1px solid var(--border); border-radius:11px; padding: 6px; height:100%; display:flex; flex-direction:column; }
   .alert-row{
     display:flex; align-items:center; gap:11px; padding: 11px 12px; border-radius:8px;
     border-left: 3px solid var(--red); background: var(--bg-raised); margin: 6px; cursor:pointer;
