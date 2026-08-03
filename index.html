@@ -403,6 +403,13 @@
   .alert-row .alert-tag{ font-family: var(--mono); font-size:10px; letter-spacing:.04em; text-transform:uppercase; color: var(--red); border:1px solid var(--red-dim); background: var(--red-dim); padding:3px 7px; border-radius:5px; flex:0 0 auto; }
   .alerts-empty{ padding: 22px 14px; text-align:center; color: var(--text-muted); font-size:13px; }
 
+  /* Attention alerts (amber variant) */
+  .alert-row.amber{
+    border-left-color: var(--amber);
+  }
+  .alert-row.amber .dot{ background: var(--amber); }
+  .alert-row.amber .alert-tag{ color: var(--amber); border-color: var(--amber-dim); background: var(--amber-dim); }
+
   /* Critical systems */
   .systems-grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; }
   .system-card{
@@ -1164,14 +1171,20 @@
         <div class="alerts-panel" id="alertsPanel"></div>
       </div>
       <div>
-        <div class="dash-section-head"><h2>Critical Systems Overview</h2></div>
-        <div class="systems-grid" id="systemsGrid"></div>
+        <div class="dash-section-head"><h2>Needs Attention</h2><span class="sub">equipment requiring attention — click to open in Equipment Monitoring</span></div>
+        <div class="alerts-panel" id="attentionPanel"></div>
       </div>
     </div>
 
-    <div class="dash-section">
-      <div class="dash-section-head"><h2>Tower Health</h2><span class="sub">click a tower to filter Equipment Monitoring</span></div>
-      <div class="tower-health-grid" id="towerHealthGrid"></div>
+    <div class="dash-section dash-cols">
+      <div>
+        <div class="dash-section-head"><h2>Critical Systems Overview</h2></div>
+        <div class="systems-grid" id="systemsGrid"></div>
+      </div>
+      <div>
+        <div class="dash-section-head"><h2>Tower Health</h2><span class="sub">click a tower to filter Equipment Monitoring</span></div>
+        <div class="tower-health-grid" id="towerHealthGrid"></div>
+      </div>
     </div>
 
     <div class="dash-section dash-cols">
@@ -1402,6 +1415,16 @@
       <div class="wo-field">
         <label for="aeSection">Category *</label>
         <select id="aeSection"></select>
+      </div>
+      <div class="wo-field">
+        <label for="aeTower">Tower / Location *</label>
+        <select id="aeTower">
+          <option value="Tower 1">Tower 1</option>
+          <option value="Tower 2">Tower 2</option>
+          <option value="Tower 3">Tower 3</option>
+          <option value="Tower 4">Tower 4</option>
+          <option value="Common" selected>Common / Shared</option>
+        </select>
       </div>
       <div class="wo-field">
         <label for="aeType">Type</label>
@@ -1667,7 +1690,7 @@ let partsSearchTerm = '';
 let compactView = false;
 let currentView = 'dashboard'; // 'dashboard' | 'equipment' | 'parts'
 let textSettings = {};
-let dataMode = 'personal'; // 'personal' | 'shared'
+let dataMode = 'shared'; // 'personal' | 'shared'
 let activePmFilter = false;
 let criticalSystemsStatus = {}; // manual-mode critical systems: { key: 'operational'|'attention'|'down' }
 let workOrders = [];            // [{ id, equipmentId, equipmentName, type, priority, description, status, createdAt }]
@@ -1700,6 +1723,7 @@ const ROLE_LABELS = { admin: 'Admin', technician: 'Technician', viewer: 'Viewer'
 function canEdit(){ return currentRole === 'admin' || currentRole === 'technician'; }
 function isAdmin(){ return currentRole === 'admin'; }
 function towerOf(item){
+  if(item.tower) return item.tower;
   const hay = (item.code + ' ' + item.name).toUpperCase();
   const m = hay.match(/T(?:OWER)?\s*-?\s*([1-4])\b/);
   return m ? 'Tower ' + m[1] : 'Common';
@@ -2563,6 +2587,7 @@ function openAddEquipModal(){
     document.getElementById(id).value = '';
   });
   document.getElementById('aePmSchedule').value = '';
+  document.getElementById('aeTower').value = 'Common';
   const errEl = document.getElementById('aeErrorField');
   errEl.style.display = 'none';
   errEl.textContent = '';
@@ -2588,11 +2613,13 @@ async function submitAddEquipment(){
     return;
   }
   const capacityRaw = document.getElementById('aeCapacity').value.trim();
+  const tower = document.getElementById('aeTower').value;
   const newItem = {
     section,
     name,
     code,
     id: code,
+    tower,
     type: document.getElementById('aeType').value.trim(),
     brand: document.getElementById('aeBrand').value.trim(),
     capacity_hp: capacityRaw === '' ? '' : (isNaN(parseFloat(capacityRaw)) ? capacityRaw : parseFloat(capacityRaw)),
@@ -3461,6 +3488,28 @@ function renderAlerts(){
     </div>`;
   }).join('');
 }
+function renderAttentionAlerts(){
+  const attentionItems = EQUIPMENT_DATA.filter(it => getStatus(it.id).status === 'attention');
+  const el = document.getElementById('attentionPanel');
+  if(!el) return;
+  if(!attentionItems.length){
+    el.innerHTML = '<div class="alerts-empty">No equipment currently needing attention.</div>';
+    return;
+  }
+  el.innerHTML = attentionItems.map(it => {
+    const d = getData(it);
+    const st = getStatus(it.id);
+    return `
+    <div class="alert-row amber" data-action="jump-equipment" data-id="${escapeHtml(it.id)}">
+      <div class="dot"></div>
+      <div class="alert-body">
+        <div class="alert-name">${escapeHtml(d.name)}</div>
+        <div class="alert-meta">${escapeHtml(d.code || it.id)} · ${escapeHtml(towerOf(d))}${st.note ? ' · ' + escapeHtml(st.note) : ''}</div>
+      </div>
+      <div class="alert-tag">Needs Attention</div>
+    </div>`;
+  }).join('');
+}
 function renderSystemsGrid(){
   const el = document.getElementById('systemsGrid');
   el.innerHTML = CRITICAL_SYSTEMS.map(sys => {
@@ -3529,6 +3578,7 @@ function renderDashboard(){
   renderBrief();
   renderKPIGrid();
   renderAlerts();
+  renderAttentionAlerts();
   renderSystemsGrid();
   renderTowerHealth();
   renderActivityFeed();
@@ -4107,6 +4157,9 @@ document.addEventListener('input', (e) => {
     loadPmDetails(), loadEquipmentAdditions(), loadEquipmentDeletions(),
   ]);
   applyTextSettings();
+  document.getElementById('teamToggleWrap').setAttribute('aria-checked', String(dataMode === 'shared'));
+  document.getElementById('teamToggle').classList.toggle('on', dataMode === 'shared');
+  document.getElementById('teamBanner').style.display = dataMode === 'shared' ? 'flex' : 'none';
   setView('dashboard');
 })();
 
