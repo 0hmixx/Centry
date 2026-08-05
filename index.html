@@ -513,24 +513,24 @@
   .system-card.down .sys-status{ color: var(--red); }
 
   /* Tower health */
-  .tower-health-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; }
-  .th-card{ background: var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; cursor:pointer; transition: border-color .15s ease, opacity .15s ease; }
+  .tower-health-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; align-items:stretch; }
+  .th-card{ background: var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; cursor:pointer; transition: border-color .15s ease, opacity .15s ease; width:100%; box-sizing:border-box; }
   .th-card:hover{ border-color: var(--blue); }
   .th-card.active{ border-color: var(--blue); box-shadow: inset 0 0 0 1px var(--blue); }
   .th-card.tier-warn{ border-color: rgba(242,169,59,0.35); background: linear-gradient(135deg, rgba(242,169,59,0.06) 0%, var(--panel) 50%); }
   .th-card.tier-bad{ border-color: rgba(226,87,76,0.4); background: linear-gradient(135deg, rgba(226,87,76,0.08) 0%, var(--panel) 50%); box-shadow: 0 0 16px rgba(226,87,76,0.08); }
   .th-card.tier-good{ opacity:.7; }
   .th-card.tier-good:hover{ opacity:1; }
-  .th-card .th-top{ display:flex; align-items:baseline; gap:8px; }
+  .th-card .th-top{ display:flex; align-items:baseline; gap:8px; min-height:18px; }
   .th-card .th-name{ font-family: var(--display); font-weight:700; font-size:13px; }
-  .th-card .th-pct{ font-family: var(--display); font-weight:700; font-size:19px; }
+  .th-card .th-pct{ font-family: var(--display); font-weight:700; font-size:13px; }
   .th-card .th-pct.good{ color: var(--teal); } .th-card .th-pct.warn{ color: var(--amber); } .th-card .th-pct.bad{ color: var(--red); }
-  .th-card .th-sub{ font-family: var(--mono); font-size:10px; color: var(--text-faint); margin-top:4px; }
-  .th-card .th-issues{ display:flex; align-items:center; gap:6px; margin-top:8px; font-size:10px; font-weight:600; }
+  .th-card .th-sub{ font-family: var(--mono); font-size:10px; color: var(--text-faint); margin-top:4px; min-height:14px; }
+  .th-card .th-issues{ display:flex; align-items:center; gap:6px; margin-top:8px; font-size:10px; font-weight:600; min-height:18px; }
   .th-card .th-issues .dot{ width:7px; height:7px; border-radius:50%; flex:0 0 auto; }
   .th-card .th-issues .dot.red{ background: var(--red); }
   .th-card .th-issues .dot.amber{ background: var(--amber); }
-  .th-card .th-ok{ font-family: var(--mono); font-size:10px; color: var(--teal); margin-top:4px; }
+  .th-card .th-ok{ font-family: var(--mono); font-size:10px; color: var(--teal); margin-top:4px; min-height:18px; }
 
   /* Activity feed */
   .activity-feed{ background: var(--panel); border:1px solid var(--border); border-radius:12px; padding: 8px; max-height: 360px; overflow-y:auto; }
@@ -1090,7 +1090,7 @@
 
     .tower-health-grid{ grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .th-card{ padding: 12px 13px; }
-    .th-card .th-pct{ font-size: 17px; }
+    .th-card .th-pct{ font-size: 13px; }
 
     .systems-grid{ grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .system-card{ padding: 10px 11px; gap: 8px; }
@@ -1132,7 +1132,7 @@
     .tower-health-grid{ grid-template-columns: 1fr 1fr; gap: 6px; }
     .th-card{ padding: 10px 11px; }
     .th-card .th-name{ font-size: 12px; }
-    .th-card .th-pct{ font-size: 16px; }
+    .th-card .th-pct{ font-size: 12px; }
     .th-card .th-sub{ font-size: 9px; }
     .th-card .th-issues,
     .th-card .th-ok{ font-size: 9.5px; }
