@@ -268,6 +268,7 @@
       radial-gradient(circle at 85% 80%, rgba(73,194,166,0.08), transparent 45%), var(--bg);
     display:flex; align-items:center; justify-content:center; padding:20px;
   }
+  .login-theme-toggle{ position:absolute; top:16px; right:16px; }
   .login-card{
     width:100%; max-width:420px; background: var(--panel); border:1px solid var(--border);
     border-radius:14px; padding:32px 30px; box-shadow: 0 24px 70px rgba(0,0,0,0.55);
@@ -1349,6 +1350,7 @@
   <a href="#dashboardPage" class="sr-only" style="position:absolute;top:0;left:0;z-index:100;background:var(--blue);color:white;padding:8px 16px;" onfocus="this.classList.remove('sr-only')" onblur="this.classList.add('sr-only')">Skip to main content</a>
 
 <div id="loginScreen">
+  <button class="theme-toggle login-theme-toggle" id="loginThemeToggle" type="button" title="Toggle day/night mode" aria-label="Toggle day and night mode">☀</button>
   <div class="login-card">
     <div class="login-brand">
       <div class="lb-eyebrow">Facilities &amp; Engineering</div>
@@ -4994,10 +4996,19 @@ document.addEventListener('input', (e) => {
 })();
 
 function updateThemeIcon(){
+  const isLight = document.body.classList.contains('light');
+  const icon = isLight ? '☾' : '☀';
   const btn = document.getElementById('themeToggle');
-  btn.textContent = document.body.classList.contains('light') ? '☾' : '☀';
+  const loginBtn = document.getElementById('loginThemeToggle');
+  if(btn) btn.textContent = icon;
+  if(loginBtn) loginBtn.textContent = icon;
 }
 document.getElementById('themeToggle').addEventListener('click', () => {
+  document.body.classList.toggle('light');
+  lsSet('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+  updateThemeIcon();
+});
+document.getElementById('loginThemeToggle').addEventListener('click', () => {
   document.body.classList.toggle('light');
   lsSet('theme', document.body.classList.contains('light') ? 'light' : 'dark');
   updateThemeIcon();
