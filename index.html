@@ -324,11 +324,15 @@
   body.role-viewer .tl-del,
   body.role-viewer .doc-del,
   body.role-viewer [data-action="open-wo-modal"],
+  body.role-viewer [data-action="open-defective-modal"],
+  body.role-viewer [data-action="open-note-modal"],
   body.role-viewer [data-action="cycle-system-status"],
   body.role-viewer [data-action="cycle-wo-status"],
   body.role-viewer [data-action="open-add-equipment"],
   body.role-viewer [data-action="delete-equipment"],
-  body.role-viewer .qa-btn[data-action="open-wo-modal"]{
+  body.role-viewer .qa-btn[data-action="open-wo-modal"],
+  body.role-viewer .qa-btn[data-action="open-defective-modal"],
+  body.role-viewer .qa-btn[data-action="open-note-modal"]{
     display:none !important;
   }
   body.role-viewer .system-card.op[data-action="cycle-system-status"],
@@ -1492,6 +1496,10 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 9v4m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
             <span>Defective Part</span>
           </div>
+          <div class="qa-btn" data-action="open-note-modal" aria-label="Add a quick note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <span>Quick Note</span>
+          </div>
         </div>
       </div>
     </div>
@@ -1696,6 +1704,31 @@
     <div class="modal-foot">
       <button class="reset-btn" id="defectiveCancel" type="button">Cancel</button>
       <button class="save-btn-lg" id="defectiveSubmit" type="button">Submit</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="noteOverlay" style="display:none">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Quick Note</h2>
+      <button class="modal-close" id="noteClose" type="button" title="Close" aria-label="Close note modal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="wo-field">
+        <label for="noteEquip">Equipment (optional)</label>
+        <select id="noteEquip">
+          <option value="">— General note —</option>
+        </select>
+      </div>
+      <div class="wo-field">
+        <label for="noteText">Note</label>
+        <textarea id="noteText" placeholder="What do you want to note down…"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="reset-btn" id="noteCancel" type="button">Cancel</button>
+      <button class="save-btn-lg" id="noteSubmit" type="button">Save</button>
     </div>
   </div>
 </div>
@@ -2136,6 +2169,7 @@ let activePmFilter = false;
 let criticalSystemsStatus = {}; // manual-mode critical systems: { key: 'operational'|'attention'|'down' }
 let workOrders = [];            // [{ id, equipmentId, equipmentName, type, priority, description, status, createdAt }]
 let defectiveParts = [];        // [{ id, equipmentId, equipmentName, partName, failureType, symptoms, actionTaken, reportedBy, createdAt }]
+let quickNotes = [];            // [{ id, equipmentId, equipmentName, text, author, createdAt }]
 let profiles = {};              // { [equipmentId]: { photo, criticality, location, dateInstalled, warranty, supplier } }
 let timelines = {};             // { [equipmentId]: [ { id, type, date, title, description, technician, partName, qty, cost, at } ] }
 let documents = {};             // { [equipmentId]: [ { id, name, url, addedAt } ] }
@@ -2381,6 +2415,10 @@ async function saveWorkOrders(){ await syncedSave(scopedKey(WORK_ORDERS_KEY), wo
 const DEFECTIVE_PARTS_KEY = 'defective-parts';
 async function loadDefectiveParts(){ await syncedLoad('defectiveParts', scopedKey(DEFECTIVE_PARTS_KEY), [], v => { defectiveParts = v; }, sharedEnabled()); }
 async function saveDefectiveParts(){ await syncedSave(scopedKey(DEFECTIVE_PARTS_KEY), defectiveParts, sharedEnabled()); }
+
+const QUICK_NOTES_KEY = 'quick-notes';
+async function loadQuickNotes(){ await syncedLoad('quickNotes', scopedKey(QUICK_NOTES_KEY), [], v => { quickNotes = v; }, sharedEnabled()); }
+async function saveQuickNotes(){ await syncedSave(scopedKey(QUICK_NOTES_KEY), quickNotes, sharedEnabled()); }
 
 const PROFILE_KEY = 'equipment-profiles';
 const TIMELINE_KEY = 'equipment-timeline';
@@ -3412,6 +3450,42 @@ async function submitDefectiveModal(){
   await saveDefectiveParts();
 }
 
+/* ---------- quick note modal ---------- */
+function populateNoteEquipSelect(){
+  const sel = document.getElementById('noteEquip');
+  sel.innerHTML = '<option value="">— General note —</option>' + EQUIPMENT_DATA.map(it => {
+    const d = getData(it);
+    return `<option value="${escapeHtml(it.id)}">${escapeHtml(d.name)} (${escapeHtml(d.code || it.id)})</option>`;
+  }).join('');
+}
+function openNoteModal(){
+  populateNoteEquipSelect();
+  document.getElementById('noteText').value = '';
+  document.getElementById('noteOverlay').style.display = 'flex';
+}
+function closeNoteModal(){
+  document.getElementById('noteOverlay').style.display = 'none';
+}
+async function submitNoteModal(){
+  if(!canEdit()) return;
+  const text = document.getElementById('noteText').value.trim();
+  if(!text) return;
+  const equipId = document.getElementById('noteEquip').value;
+  const item = equipId ? EQUIPMENT_DATA.find(it => it.id === equipId) : null;
+  const entry = {
+    id: 'NT-' + Date.now().toString(36).toUpperCase(),
+    equipmentId: equipId || '',
+    equipmentName: item ? getData(item).name : 'General',
+    text,
+    author: ROLE_LABELS[currentRole] || currentRole,
+    createdAt: new Date().toISOString(),
+  };
+  quickNotes.unshift(entry);
+  closeNoteModal();
+  renderDashboard();
+  await saveQuickNotes();
+}
+
 
 
 /* ================= js/maintenance.js ================= */
@@ -3981,6 +4055,9 @@ function getActivityEntries(){
   defectiveParts.forEach(dp => {
     entries.push({ kind:'defective', dp, at:dp.createdAt });
   });
+  quickNotes.forEach(n => {
+    entries.push({ kind:'note', note: n, at:n.createdAt });
+  });
   Object.keys(overrides).forEach(id => {
     const o = overrides[id];
     if(o.last_serviced){
@@ -4254,6 +4331,19 @@ function renderActivityFeed(){
         </div>
       </div>`;
     }
+    if(e.kind === 'note'){
+      const n = e.note;
+      return `
+      <div class="activity-row">
+        <div class="a-icon operational">${statusIcons.operational}</div>
+        <div class="a-body">
+          <div class="a-name">${escapeHtml(n.equipmentName)}</div>
+          <div class="a-action">Note by ${escapeHtml(n.author)}</div>
+          ${n.text ? `<div class="a-reason">${escapeHtml(n.text)}</div>` : ''}
+          <div class="a-time">${fmtDate(e.at)}</div>
+        </div>
+      </div>`;
+    }
     return '';
   }).join('');
 }
@@ -4361,6 +4451,12 @@ document.addEventListener('click', (e) => {
   if(e.target.id === 'defectiveOverlay'){ closeDefectiveModal(); return; }
   if(e.target.closest('#defectiveSubmit')){ submitDefectiveModal(); return; }
 
+  const openNote = e.target.closest('[data-action="open-note-modal"]');
+  if(openNote){ openNoteModal(); return; }
+  if(e.target.closest('#noteClose') || e.target.closest('#noteCancel')){ closeNoteModal(); return; }
+  if(e.target.id === 'noteOverlay'){ closeNoteModal(); return; }
+  if(e.target.closest('#noteSubmit')){ submitNoteModal(); return; }
+
   const woCycle = e.target.closest('[data-action="cycle-wo-status"]');
   if(woCycle){ cycleWorkOrderStatus(woCycle.dataset.id); return; }
 });
@@ -4370,6 +4466,9 @@ document.addEventListener('keydown', (e) => {
   }
   if(e.key === 'Escape' && document.getElementById('defectiveOverlay').style.display !== 'none'){
     closeDefectiveModal();
+  }
+  if(e.key === 'Escape' && document.getElementById('noteOverlay').style.display !== 'none'){
+    closeNoteModal();
   }
 });
 
@@ -4838,7 +4937,7 @@ async function switchDataMode(){
   document.getElementById('teamBanner').style.display = isShared ? 'flex' : 'none';
   editingIds.clear();
   closeProfileModal();
-  await Promise.all([loadStatuses(), loadOverrides(), loadCriticalSystems(), loadWorkOrders(), loadDefectiveParts(), loadProfiles(), loadTimelines(), loadDocuments()]);
+  await Promise.all([loadStatuses(), loadOverrides(), loadCriticalSystems(), loadWorkOrders(), loadDefectiveParts(), loadQuickNotes(), loadProfiles(), loadTimelines(), loadDocuments()]);
   if(currentView === 'dashboard') renderDashboard();
   else if(currentView === 'equipment') render();
   else renderParts();
@@ -4877,7 +4976,7 @@ document.addEventListener('input', (e) => {
   await loadCoreData();
   await Promise.all([
     loadStatuses(), loadOverrides(), loadTextSettings(),
-    loadCriticalSystems(), loadWorkOrders(), loadDefectiveParts(),
+    loadCriticalSystems(), loadWorkOrders(), loadDefectiveParts(), loadQuickNotes(),
     loadProfiles(), loadTimelines(), loadDocuments(),
     loadPmDetails(), loadEquipmentAdditions(), loadEquipmentDeletions(),
   ]);
