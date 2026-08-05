@@ -1062,9 +1062,11 @@
     .dash-cols{ grid-template-columns: 1fr; gap: 14px; }
     .head-critical{ order: -1; }
     .kpi-grid{ grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    .tower-health-grid{ grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .stats{ grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .uptime-grid{ grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .tower-health-grid{ grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .systems-grid{ grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .quick-actions-grid{ grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .quick-actions-grid{ grid-template-columns: repeat(4, 1fr); gap: 6px; }
     .activity-feed{ max-height: 320px; }
   }
 
@@ -1077,6 +1079,10 @@
     .top-meta .clock{ font-size: 11.5px; }
 
     .kpi-grid{ grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .stats{ grid-template-columns: repeat(2, 1fr); gap: 6px; }
+
+    .grid{ grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+    .compact-row{ padding: 8px 10px; gap: 8px; }
 
     .tower-health-grid{ grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .th-card{ padding: 12px 13px; }
@@ -1093,8 +1099,14 @@
     .activity-feed{ max-height: 280px; }
     .activity-row{ padding: 7px 10px; }
 
+    .view-tabs{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+    .view-tab{ white-space:nowrap; }
+
     .dash-section{ margin-bottom: 20px; }
     .dash-section-head h2{ font-size: 14px; }
+
+    .part-row{ padding: 9px 10px; gap: 8px; }
+    .part-row .p-spec{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   }
 
   /* --- 600px small tablet / large phone --- */
@@ -1105,6 +1117,13 @@
     .header-actions{ width:100%; justify-content:flex-start; }
 
     .kpi-grid{ grid-template-columns: 1fr 1fr; gap: 6px; }
+    .stats{ grid-template-columns: 1fr 1fr; gap: 6px; }
+    .uptime-grid{ grid-template-columns: 1fr 1fr; gap: 6px; }
+
+    .grid{ grid-template-columns: 1fr; gap: 8px; }
+    .edit-grid{ grid-template-columns: 1fr; }
+    .meta-grid{ grid-template-columns: 1fr; gap: 4px 10px; }
+    .section-head h2{ font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
 
     .tower-health-grid{ grid-template-columns: 1fr 1fr; gap: 6px; }
     .th-card{ padding: 10px 11px; }
@@ -1138,6 +1157,13 @@
     .live-label{ font-size: 9px; }
     .live-sub{ font-size: 9px; }
 
+    .part-row{ padding: 8px 8px; gap: 6px; }
+    .part-row .p-qty{ font-size:10px; }
+
+    .pm-cal-grid{ gap:3px; }
+    .pm-cal-day{ min-height:56px; padding:4px; }
+    .pm-cal-daynum{ font-size:10px; }
+
     .dash-section{ margin-bottom: 16px; }
     .dash-section-head{ margin-bottom: 8px; }
     .dash-section-head h2{ font-size: 13px; }
@@ -1150,6 +1176,8 @@
     h1.brand-title{ font-size: 19px; }
 
     .kpi-grid{ grid-template-columns: 1fr; gap: 6px; }
+    .stats{ grid-template-columns: 1fr; gap: 6px; }
+    .uptime-grid{ grid-template-columns: 1fr; gap: 6px; }
 
     .tower-health-grid{ grid-template-columns: 1fr; gap: 6px; }
     .th-card{ display:flex; align-items:center; gap:12px; padding: 10px 12px; }
@@ -1165,6 +1193,13 @@
 
     .view-tabs{ gap: 0; overflow-x:auto; -webkit-overflow-scrolling:touch; }
     .view-tab{ padding: 8px 10px; font-size: 11px; white-space:nowrap; }
+
+    .pm-cal-grid{ gap:2px; }
+    .pm-cal-day{ min-height:44px; padding:3px; }
+    .pm-cal-daynum{ font-size:9px; }
+    .pm-cal-nav{ flex-wrap:wrap; justify-content:center; }
+    .pm-cal-label{ min-width:auto; font-size:13px; }
+    .pm-week-grid{ grid-template-columns: 1fr; }
 
     .login-card{ padding: 24px 20px; }
     .role-select{ gap: 8px; }
@@ -1453,6 +1488,10 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
             <span>Parts Catalog</span>
           </div>
+          <div class="qa-btn" data-action="open-defective-modal" aria-label="Report defective part">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 9v4m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+            <span>Defective Part</span>
+          </div>
         </div>
       </div>
     </div>
@@ -1609,6 +1648,54 @@
     <div class="modal-foot">
       <button class="reset-btn" id="woCancel" type="button">Cancel</button>
       <button class="save-btn-lg" id="woSubmit" type="button">Submit</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="defectiveOverlay" style="display:none">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Report Defective Part</h2>
+      <button class="modal-close" id="defectiveClose" type="button" title="Close" aria-label="Close defective part modal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="wo-field">
+        <label for="defEquip">Equipment</label>
+        <select id="defEquip"></select>
+      </div>
+      <div class="wo-field">
+        <label for="defPartName">Part Name</label>
+        <input type="text" id="defPartName" placeholder="e.g. Bearing, Impeller, Fuse">
+      </div>
+      <div class="wo-field">
+        <label for="defType">Failure Type</label>
+        <select id="defType">
+          <option value="wear">Wear</option>
+          <option value="damage">Damage</option>
+          <option value="electrical">Electrical</option>
+          <option value="mechanical">Mechanical</option>
+          <option value="corrosion">Corrosion</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="wo-field">
+        <label for="defSymptoms">Symptoms</label>
+        <textarea id="defSymptoms" placeholder="Describe what happened — noise, leak, failure mode…"></textarea>
+      </div>
+      <div class="wo-field">
+        <label for="defAction">Action Taken</label>
+        <select id="defAction">
+          <option value="repaired">Repaired</option>
+          <option value="replaced">Replaced</option>
+          <option value="awaiting_parts">Awaiting Parts</option>
+          <option value="contractor">Sent to Contractor</option>
+          <option value="none">No Action Yet</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="reset-btn" id="defectiveCancel" type="button">Cancel</button>
+      <button class="save-btn-lg" id="defectiveSubmit" type="button">Submit</button>
     </div>
   </div>
 </div>
@@ -2048,6 +2135,7 @@ let dataMode = 'shared'; // 'personal' | 'shared'
 let activePmFilter = false;
 let criticalSystemsStatus = {}; // manual-mode critical systems: { key: 'operational'|'attention'|'down' }
 let workOrders = [];            // [{ id, equipmentId, equipmentName, type, priority, description, status, createdAt }]
+let defectiveParts = [];        // [{ id, equipmentId, equipmentName, partName, failureType, symptoms, actionTaken, reportedBy, createdAt }]
 let profiles = {};              // { [equipmentId]: { photo, criticality, location, dateInstalled, warranty, supplier } }
 let timelines = {};             // { [equipmentId]: [ { id, type, date, title, description, technician, partName, qty, cost, at } ] }
 let documents = {};             // { [equipmentId]: [ { id, name, url, addedAt } ] }
@@ -2289,6 +2377,10 @@ async function loadCriticalSystems(){ await syncedLoad('criticalSystems', scoped
 async function saveCriticalSystems(){ await syncedSave(scopedKey(CRITICAL_SYSTEMS_KEY), criticalSystemsStatus, sharedEnabled()); }
 async function loadWorkOrders(){ await syncedLoad('workOrders', scopedKey(WORK_ORDERS_KEY), [], v => { workOrders = v; }, sharedEnabled()); }
 async function saveWorkOrders(){ await syncedSave(scopedKey(WORK_ORDERS_KEY), workOrders, sharedEnabled()); }
+
+const DEFECTIVE_PARTS_KEY = 'defective-parts';
+async function loadDefectiveParts(){ await syncedLoad('defectiveParts', scopedKey(DEFECTIVE_PARTS_KEY), [], v => { defectiveParts = v; }, sharedEnabled()); }
+async function saveDefectiveParts(){ await syncedSave(scopedKey(DEFECTIVE_PARTS_KEY), defectiveParts, sharedEnabled()); }
 
 const PROFILE_KEY = 'equipment-profiles';
 const TIMELINE_KEY = 'equipment-timeline';
@@ -3275,6 +3367,51 @@ async function submitWoModal(){
   await saveWorkOrders();
 }
 
+/* ---------- defective parts modal ---------- */
+function populateDefEquipSelect(){
+  const sel = document.getElementById('defEquip');
+  sel.innerHTML = EQUIPMENT_DATA.map(it => {
+    const d = getData(it);
+    return `<option value="${escapeHtml(it.id)}">${escapeHtml(d.name)} (${escapeHtml(d.code || it.id)})</option>`;
+  }).join('');
+}
+function openDefectiveModal(){
+  populateDefEquipSelect();
+  document.getElementById('defPartName').value = '';
+  document.getElementById('defType').value = 'wear';
+  document.getElementById('defSymptoms').value = '';
+  document.getElementById('defAction').value = 'none';
+  document.getElementById('defectiveOverlay').style.display = 'flex';
+}
+function closeDefectiveModal(){
+  document.getElementById('defectiveOverlay').style.display = 'none';
+}
+async function submitDefectiveModal(){
+  if(!canEdit()) return;
+  const equipId = document.getElementById('defEquip').value;
+  const item = EQUIPMENT_DATA.find(it => it.id === equipId);
+  if(!item) return;
+  const d = getData(item);
+  const partName = document.getElementById('defPartName').value.trim();
+  if(!partName) return;
+  const entry = {
+    id: 'DP-' + Date.now().toString(36).toUpperCase(),
+    equipmentId: item.id,
+    equipmentName: d.name,
+    tower: towerOf(d),
+    partName,
+    failureType: document.getElementById('defType').value,
+    symptoms: document.getElementById('defSymptoms').value.trim(),
+    actionTaken: document.getElementById('defAction').value,
+    reportedBy: ROLE_LABELS[currentRole] || currentRole,
+    createdAt: new Date().toISOString(),
+  };
+  defectiveParts.unshift(entry);
+  closeDefectiveModal();
+  renderDashboard();
+  await saveDefectiveParts();
+}
+
 
 
 /* ================= js/maintenance.js ================= */
@@ -3811,7 +3948,8 @@ function computeKPIs(){
   let totalHP = 0;
   EQUIPMENT_DATA.forEach(it => { totalHP += (it.capacity_hp || 0); });
   const totalKW = Math.round(totalHP * 0.7457);
-  return { ...counts, total, availabilityPct, pmDueToday, pmOverdue, openWO, waitingContractor, totalHP: Math.round(totalHP * 10) / 10, totalKW };
+  const defectiveCount = defectiveParts.length;
+  return { ...counts, total, availabilityPct, pmDueToday, pmOverdue, openWO, waitingContractor, totalHP: Math.round(totalHP * 10) / 10, totalKW, defectiveCount };
 }
 function deriveSystemStatus(sys){
   if(sys.mode === 'manual') return criticalSystemsStatus[sys.key] || 'operational';
@@ -3839,6 +3977,9 @@ function getActivityEntries(){
     entries.push({ kind:'wo-created', wo:w, at:w.createdAt });
     if(w.status === 'closed') entries.push({ kind:'wo-closed', wo:w, at:w.updatedAt || w.createdAt });
     if(w.status === 'waiting_contractor') entries.push({ kind:'wo-contractor', wo:w, at:w.updatedAt || w.createdAt });
+  });
+  defectiveParts.forEach(dp => {
+    entries.push({ kind:'defective', dp, at:dp.createdAt });
   });
   Object.keys(overrides).forEach(id => {
     const o = overrides[id];
@@ -3913,10 +4054,10 @@ function renderKPIGrid(){
       <div class="kpi-num blue">${k.openWO}</div>
       <div class="kpi-lbl">Open Work Orders</div>
     </div>
-    <div class="kpi-card" data-action="kpi-click" data-kpi="totalCapacity" role="status" aria-label="Total capacity: ${k.totalHP} HP, ${k.totalKW} kW">
-      <div class="kpi-icon" aria-hidden="true">${KPI_ICONS.tool}</div>
-      <div class="kpi-num teal">${Math.round(k.totalKW)} <span style="font-size:14px;font-weight:600;">kW</span></div>
-      <div class="kpi-lbl">${Math.round(k.totalHP)} HP</div>
+    <div class="kpi-card" data-action="kpi-click" data-kpi="defectiveParts" role="status" aria-label="${k.defectiveCount} defective parts reported">
+      <div class="kpi-icon" aria-hidden="true">${KPI_ICONS.warn}</div>
+      <div class="kpi-num amber">${k.defectiveCount}</div>
+      <div class="kpi-lbl">Defective Parts</div>
     </div>`;
 }
 function renderAlerts(){
@@ -4099,6 +4240,20 @@ function renderActivityFeed(){
         </div>
       </div>`;
     }
+    if(e.kind === 'defective'){
+      const dp = e.dp;
+      const actionMap = { repaired:'Repaired', replaced:'Replaced', awaiting_parts:'Awaiting parts', contractor:'Sent to contractor', none:'No action yet' };
+      return `
+      <div class="activity-row">
+        <div class="a-icon attention">${statusIcons.attention}</div>
+        <div class="a-body">
+          <div class="a-name">${escapeHtml(dp.equipmentName)}</div>
+          <div class="a-action">Defective part: ${escapeHtml(dp.partName)}</div>
+          ${dp.symptoms ? `<div class="a-reason">${escapeHtml(dp.symptoms)}</div>` : ''}
+          <div class="a-time">${fmtDate(e.at)} · ${actionMap[dp.actionTaken] || dp.actionTaken}</div>
+        </div>
+      </div>`;
+    }
     return '';
   }).join('');
 }
@@ -4200,12 +4355,21 @@ document.addEventListener('click', (e) => {
   if(e.target.id === 'woOverlay'){ closeWoModal(); return; }
   if(e.target.closest('#woSubmit')){ submitWoModal(); return; }
 
+  const openDef = e.target.closest('[data-action="open-defective-modal"]');
+  if(openDef){ openDefectiveModal(); return; }
+  if(e.target.closest('#defectiveClose') || e.target.closest('#defectiveCancel')){ closeDefectiveModal(); return; }
+  if(e.target.id === 'defectiveOverlay'){ closeDefectiveModal(); return; }
+  if(e.target.closest('#defectiveSubmit')){ submitDefectiveModal(); return; }
+
   const woCycle = e.target.closest('[data-action="cycle-wo-status"]');
   if(woCycle){ cycleWorkOrderStatus(woCycle.dataset.id); return; }
 });
 document.addEventListener('keydown', (e) => {
   if(e.key === 'Escape' && document.getElementById('woOverlay').style.display !== 'none'){
     closeWoModal();
+  }
+  if(e.key === 'Escape' && document.getElementById('defectiveOverlay').style.display !== 'none'){
+    closeDefectiveModal();
   }
 });
 
@@ -4674,7 +4838,7 @@ async function switchDataMode(){
   document.getElementById('teamBanner').style.display = isShared ? 'flex' : 'none';
   editingIds.clear();
   closeProfileModal();
-  await Promise.all([loadStatuses(), loadOverrides(), loadCriticalSystems(), loadWorkOrders(), loadProfiles(), loadTimelines(), loadDocuments()]);
+  await Promise.all([loadStatuses(), loadOverrides(), loadCriticalSystems(), loadWorkOrders(), loadDefectiveParts(), loadProfiles(), loadTimelines(), loadDocuments()]);
   if(currentView === 'dashboard') renderDashboard();
   else if(currentView === 'equipment') render();
   else renderParts();
@@ -4713,7 +4877,7 @@ document.addEventListener('input', (e) => {
   await loadCoreData();
   await Promise.all([
     loadStatuses(), loadOverrides(), loadTextSettings(),
-    loadCriticalSystems(), loadWorkOrders(),
+    loadCriticalSystems(), loadWorkOrders(), loadDefectiveParts(),
     loadProfiles(), loadTimelines(), loadDocuments(),
     loadPmDetails(), loadEquipmentAdditions(), loadEquipmentDeletions(),
   ]);
