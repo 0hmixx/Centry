@@ -273,11 +273,21 @@
   /* Notes list modal */
   .nl-row{ padding:14px 18px; border-bottom:1px solid var(--border); }
   .nl-row:last-child{ border-bottom:none; }
+  .nl-row.nl-done{ opacity:.5; }
+  .nl-row.nl-done .nl-text{ text-decoration:line-through; }
   .nl-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
   .nl-equip{ font-family:var(--display); font-size:13px; font-weight:600; }
   .nl-author{ font-family:var(--mono); font-size:10px; color:var(--text-faint); }
   .nl-text{ font-size:12.5px; color:var(--text-muted); line-height:1.4; margin-top:4px; }
-  .nl-time{ font-family:var(--mono); font-size:10px; color:var(--text-faint); margin-top:6px; }
+  .nl-foot{ display:flex; justify-content:space-between; align-items:center; margin-top:6px; }
+  .nl-time{ font-family:var(--mono); font-size:10px; color:var(--text-faint); }
+  .nl-actions{ display:flex; gap:6px; }
+  .nl-btn{ font-family:var(--mono); font-size:10px; padding:3px 8px; border-radius:5px; border:1px solid var(--border); background:var(--bg-raised); color:var(--text-muted); cursor:pointer; white-space:nowrap; }
+  .nl-btn:hover{ border-color:var(--text-faint); }
+  .nl-complete{ color:var(--teal); border-color:var(--teal-dim); }
+  .nl-complete:hover{ background:var(--teal-dim); }
+  .nl-delete{ color:var(--red); border-color:var(--red-dim); }
+  .nl-delete:hover{ background:var(--red-dim); }
   .nl-empty{ padding:40px 18px; text-align:center; color:var(--text-faint); font-size:13px; }
   .login-card{
     width:100%; max-width:420px; background: var(--panel); border:1px solid var(--border);
@@ -343,7 +353,8 @@
   body.role-viewer [data-action="delete-equipment"],
   body.role-viewer .qa-btn[data-action="open-wo-modal"],
   body.role-viewer .qa-btn[data-action="open-defective-modal"],
-  body.role-viewer .qa-btn[data-action="open-note-modal"]{
+  body.role-viewer .qa-btn[data-action="open-note-modal"],
+  body.role-viewer .nl-actions{
     display:none !important;
   }
   body.role-viewer .system-card.op[data-action="cycle-system-status"],
@@ -3504,6 +3515,7 @@ async function submitNoteModal(){
     equipmentName: item ? getData(item).name : 'General',
     text,
     author: ROLE_LABELS[currentRole] || currentRole,
+    completed: false,
     createdAt: new Date().toISOString(),
   };
   quickNotes.unshift(entry);
@@ -3519,19 +3531,40 @@ function openNotesList(){
     el.innerHTML = '<div class="nl-empty">No notes yet.</div>';
   } else {
     el.innerHTML = quickNotes.map(n => `
-      <div class="nl-row">
+      <div class="nl-row ${n.completed ? 'nl-done' : ''}" data-note-id="${escapeHtml(n.id)}">
         <div class="nl-head">
           <span class="nl-equip">${escapeHtml(n.equipmentName)}</span>
           <span class="nl-author">${escapeHtml(n.author)}</span>
         </div>
         <div class="nl-text">${escapeHtml(n.text)}</div>
-        <div class="nl-time">${fmtDate(n.createdAt)}</div>
+        <div class="nl-foot">
+          <span class="nl-time">${fmtDate(n.createdAt)}</span>
+          <div class="nl-actions">
+            <button class="nl-btn nl-complete" data-action="note-toggle-complete" data-id="${escapeHtml(n.id)}" title="${n.completed ? 'Mark incomplete' : 'Mark complete'}">${n.completed ? '↩ Reopen' : '✓ Complete'}</button>
+            <button class="nl-btn nl-delete" data-action="note-delete" data-id="${escapeHtml(n.id)}" title="Delete note">✕</button>
+          </div>
+        </div>
       </div>`).join('');
   }
   document.getElementById('notesListOverlay').style.display = 'flex';
 }
 function closeNotesList(){
   document.getElementById('notesListOverlay').style.display = 'none';
+}
+async function toggleNoteComplete(id){
+  if(!canEdit()) return;
+  const note = quickNotes.find(n => n.id === id);
+  if(!note) return;
+  note.completed = !note.completed;
+  openNotesList();
+  await saveQuickNotes();
+}
+async function deleteNote(id){
+  if(!canEdit()) return;
+  if(!confirm('Delete this note?')) return;
+  quickNotes = quickNotes.filter(n => n.id !== id);
+  openNotesList();
+  await saveQuickNotes();
 }
 
 
@@ -4505,10 +4538,15 @@ document.addEventListener('click', (e) => {
   if(e.target.id === 'noteOverlay'){ closeNoteModal(); return; }
   if(e.target.closest('#noteSubmit')){ submitNoteModal(); return; }
 
-  const openNotesList = e.target.closest('[data-action="open-notes-list"]');
-  if(openNotesList){ openNotesList(); return; }
+  const openNotesBtn = e.target.closest('[data-action="open-notes-list"]');
+  if(openNotesBtn){ openNotesList(); return; }
   if(e.target.closest('#notesListClose')){ closeNotesList(); return; }
   if(e.target.id === 'notesListOverlay'){ closeNotesList(); return; }
+
+  const noteComplete = e.target.closest('[data-action="note-toggle-complete"]');
+  if(noteComplete){ toggleNoteComplete(noteComplete.dataset.id); return; }
+  const noteDelete = e.target.closest('[data-action="note-delete"]');
+  if(noteDelete){ deleteNote(noteDelete.dataset.id); return; }
 
   const woCycle = e.target.closest('[data-action="cycle-wo-status"]');
   if(woCycle){ cycleWorkOrderStatus(woCycle.dataset.id); return; }
