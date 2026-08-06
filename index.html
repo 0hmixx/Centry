@@ -1715,6 +1715,7 @@
       <div class="wo-field">
         <label for="defPartName">Part Name</label>
         <input type="text" id="defPartName" placeholder="e.g. Bearing, Impeller, Fuse">
+        <select id="defPartSelect" style="display:none"></select>
       </div>
       <div class="wo-field">
         <label for="defType">Failure Type</label>
@@ -3457,6 +3458,33 @@ async function submitWoModal(){
 }
 
 /* ---------- defective parts modal ---------- */
+const ELEVATOR_PARTS = [
+  'Hoisting Rope Recutting','Governor Rope','Synchronous Belt','MELD Battery (4 pcs)',
+  'Traction Sheave','Car Suspension Sheave Bearing','Counter Weight Sheave Bearing',
+  'Governor Tension Sheave Bearing','Car Door Pivot Arm Bearing','SDE Pivot Arm Bearing',
+  'Synchronous Pulley','Counter Weight Solid Guide Shoe','Car Guide Shoe FIBRA',
+  'Car Guide Shoe Rod','Counter Weight Guide Roller','Car Guide Roller 76mm',
+  'Hanger Roller','Car Fan','SDE Switch','Interlock Bridge Contact',
+  'SDE Captyre Wire','E1 Card','Photoeye Sensor'
+];
+function togglePartField(){
+  const cat = document.getElementById('defCategory').value;
+  const input = document.getElementById('defPartName');
+  const select = document.getElementById('defPartSelect');
+  if(cat === 'Elevator System'){
+    input.style.display = 'none';
+    select.style.display = '';
+    select.innerHTML = ELEVATOR_PARTS.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join('');
+  } else {
+    input.style.display = '';
+    select.style.display = 'none';
+  }
+}
+function getPartNameValue(){
+  const input = document.getElementById('defPartName');
+  const select = document.getElementById('defPartSelect');
+  return select.style.display === 'none' ? input.value.trim() : select.value;
+}
 function populateDefEquipSelect(category){
   const sel = document.getElementById('defEquip');
   const items = category ? EQUIPMENT_DATA.filter(it => getData(it).section === category) : EQUIPMENT_DATA;
@@ -3469,12 +3497,14 @@ function populateDefCategory(){
   const sel = document.getElementById('defCategory');
   const cats = [...new Set(EQUIPMENT_DATA.map(it => getData(it).section))].sort();
   sel.innerHTML = `<option value="">All Categories</option>` + cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
-  sel.onchange = () => populateDefEquipSelect(sel.value);
+  sel.onchange = () => { populateDefEquipSelect(sel.value); togglePartField(); };
 }
 function openDefectiveModal(){
   populateDefCategory();
   populateDefEquipSelect();
   document.getElementById('defPartName').value = '';
+  document.getElementById('defPartSelect').style.display = 'none';
+  document.getElementById('defPartName').style.display = '';
   document.getElementById('defType').value = 'wear';
   document.getElementById('defSymptoms').value = '';
   document.getElementById('defAction').value = 'none';
@@ -3489,7 +3519,7 @@ async function submitDefectiveModal(){
   const item = EQUIPMENT_DATA.find(it => it.id === equipId);
   if(!item) return;
   const d = getData(item);
-  const partName = document.getElementById('defPartName').value.trim();
+  const partName = getPartNameValue();
   if(!partName) return;
   const entry = {
     id: 'DP-' + Date.now().toString(36).toUpperCase(),
