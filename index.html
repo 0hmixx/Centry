@@ -2586,6 +2586,8 @@ function generateSimulatedUptime(item){
 
 function ensureUptimeHistory(){
   let changed = false;
+  const today = new Date();
+  today.setHours(0,0,0,0);
   EQUIPMENT_DATA.forEach(item => {
     if(!uptimeHistory[item.id]){
       const result = generateSimulatedUptime(item);
@@ -2594,14 +2596,29 @@ function ensureUptimeHistory(){
       changed = true;
     }
     const bars = uptimeHistory[item.id];
-    if(bars && bars.length){
-      const st = getStatus(item.id);
-      let currentColor = 'green';
-      if(st.status === 'down') currentColor = 'red';
-      else if(st.status === 'attention') currentColor = 'yellow';
-      const last = bars[bars.length - 1];
-      if(last !== currentColor){
-        bars[bars.length - 1] = currentColor;
+    if(!bars || !bars.length) return;
+    const st = getStatus(item.id);
+    const history = (st.history || []).slice().sort((a,b) => new Date(a.at) - new Date(b.at));
+    const startStr = uptimeStartDates[item.id];
+    if(!startStr) return;
+    const start = new Date(startStr + 'T00:00:00');
+    const numBars = bars.length;
+    for(let i = 0; i < numBars; i++){
+      const barDate = new Date(start);
+      barDate.setDate(barDate.getDate() + i);
+      barDate.setHours(0,0,0,0);
+      let color = 'green';
+      for(const h of history){
+        const hDate = new Date(h.at);
+        hDate.setHours(0,0,0,0);
+        if(hDate <= barDate){
+          if(h.status === 'down') color = 'red';
+          else if(h.status === 'attention') color = 'yellow';
+          else color = 'green';
+        }
+      }
+      if(bars[i] !== color){
+        bars[i] = color;
         changed = true;
       }
     }
