@@ -439,7 +439,6 @@
   .dash-section-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom: 12px; gap:10px; flex-wrap:wrap; }
   .dash-section-head h2{ font-family: var(--display); font-size: 15px; font-weight:700; margin:0; letter-spacing:0.01em; color: var(--text-muted); }
   .dash-section-head .sub{ color: var(--text-faint); font-size: 12px; }
-  .dash-section.head-critical .dash-section-head h2{ color: var(--text); font-size:16px; }
 
   /* Morning brief */
   .brief-card{
@@ -499,7 +498,7 @@
   }
   .alert-row:hover{ background: var(--panel-2); }
   .alert-header{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
-  .alert-name{ font-family: var(--display); font-weight:700; font-size:13px; color:var(--text-main); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .alert-name{ font-family: var(--display); font-weight:700; font-size:13px; color:var(--text); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .alert-tag{ font-family: var(--mono); font-size:9px; letter-spacing:.05em; text-transform:uppercase; color: var(--red); border:1px solid var(--red-dim); background: var(--red-dim); padding:2px 6px; border-radius:4px; flex:0 0 auto; font-weight:600; white-space:nowrap; }
   .alert-meta{ font-family: var(--mono); font-size:10px; color: var(--text-faint); margin-top:4px; }
   .alert-fault{ display:flex; align-items:center; gap:5px; margin-top:4px; font-size:11px; color: var(--amber); font-weight:500; }
@@ -566,7 +565,7 @@
   .activity-row .a-icon.wo{ background: rgba(75,130,199,0.15); color: var(--blue); }
   .activity-row .a-icon.pm{ background: rgba(73,194,166,0.15); color: var(--teal); }
   .activity-row .a-body{ flex:1; min-width:0; }
-  .activity-row .a-name{ font-family: var(--display); font-weight:600; font-size:13px; color:var(--text-main); }
+  .activity-row .a-name{ font-family: var(--display); font-weight:600; font-size:13px; color:var(--text); }
   .activity-row .a-action{ font-size:12px; color: var(--text-muted); margin-top:1px; }
   .activity-row .a-reason{ font-size:11px; color: var(--text-faint); margin-top:2px; font-style:italic; }
   .activity-row .a-time{ font-family: var(--mono); font-size:10px; color: var(--text-faint); margin-top:4px; }
@@ -593,10 +592,6 @@
     color: var(--text); font-family: var(--body); font-size:13px; padding:9px 10px; box-sizing:border-box;
   }
   .wo-field textarea{ resize:vertical; min-height:70px; }
-  .wo-status-pill{ font-family: var(--mono); font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; padding:2px 7px; border-radius:5px; cursor:pointer; flex:0 0 auto; }
-  .wo-status-pill.open{ color: var(--red); background: var(--red-dim); border:1px solid var(--red-dim); }
-  .wo-status-pill.waiting_contractor{ color: var(--amber); background: var(--amber-dim); border:1px solid var(--amber-dim); }
-  .wo-status-pill.closed{ color: var(--teal); background: var(--teal-dim); border:1px solid var(--teal-dim); }
 
   @media print{
     #dashboardPage{ display:none !important; }
@@ -971,9 +966,15 @@
   }
   .log-btn:hover{ color: var(--blue); border-color: var(--blue); }
 
-  .plate-foot{ display:flex; justify-content:space-between; align-items:center; margin-top: 8px; }
+  .plate-foot{ display:flex; justify-content:space-between; align-items:center; margin-top: 8px; gap:8px; }
   .updated-tag{ font-family: var(--mono); font-size: 10px; color: var(--text-faint); }
-  .pm-tag{ font-family: var(--mono); font-size: 10px; color: var(--text-faint); border: 1px solid var(--border-soft); border-radius: 4px; padding: 2px 6px; }
+  .pm-tag{ font-family: var(--mono); font-size: 10px; color: var(--text-faint); border: 1px solid var(--border-soft); border-radius: 4px; padding: 2px 6px; white-space:nowrap; }
+
+  .ub.green{ background:var(--teal); opacity:.75; }
+  .ub.yellow{ background:var(--amber); opacity:.85; }
+  .ub.red{ background:var(--red); opacity:.9; }
+  .ub.green:hover, .ub.yellow:hover, .ub.red:hover{ opacity:1; }
+  .uptime-pct{ font-family:var(--mono); font-size:9.5px; color:var(--text-faint); white-space:nowrap; flex:0 0 auto; }
 
   .history-toggle{
     margin-top: 10px; font-family: var(--mono); font-size: 10.5px; color: var(--blue);
@@ -1373,6 +1374,111 @@
   .rp-card .rp-qty{ font-family: var(--mono); font-size:10px; color: var(--teal); margin-top:4px; }
   .related-note{ font-size:11.5px; color: var(--text-faint); margin-bottom:12px; }
 
+  /* ---------- Equipment Status page ---------- */
+  #statusPage{ display:none; padding:0 0 20px; }
+  #statusPage.showing{ display:block; }
+  .status-hero{ margin-bottom:20px; }
+  .status-hero h1{ font-family:var(--display); font-size:18px; font-weight:700; margin:0 0 4px; }
+  .status-hero .sub{ font-family:var(--mono); font-size:11px; color:var(--text-faint); }
+  .status-summary{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:22px; }
+  .status-sum-card{
+    background:var(--panel); border:1px solid var(--border-soft); border-radius:10px;
+    padding:14px 16px; display:flex; flex-direction:column; gap:4px;
+  }
+  .status-sum-card .ss-label{ font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-faint); }
+  .status-sum-card .ss-num{ font-family:var(--display); font-size:26px; font-weight:700; }
+  .status-sum-card .ss-num.green{ color:var(--teal); }
+  .status-sum-card .ss-num.yellow{ color:var(--amber); }
+  .status-sum-card .ss-num.red{ color:var(--red); }
+  .status-sum-card .ss-num.blue{ color:var(--blue); }
+  .status-grid{ display:flex; flex-wrap:wrap; gap:14px; }
+  .status-grid .status-card{ width:calc(33.333% - 10px); min-width:200px; }
+  .tower-group{ margin-bottom:24px; flex:0 0 100%; }
+  .tower-group-head{ display:flex; align-items:center; gap:10px; margin-bottom:12px; padding-bottom:8px; border-bottom:1px solid var(--border-soft); cursor:pointer; user-select:none; }
+  .tower-group-head h2{ font-family:var(--display); font-size:14px; font-weight:600; margin:0; }
+  .tower-group-meta{ margin-left:auto; display:flex; align-items:center; gap:6px; }
+  .tower-group-count{ font-family:var(--mono); font-size:10px; color:var(--text-faint); }
+  .tower-group .tower-chevron{ transition:transform .15s; color:var(--text-faint); }
+  .tower-group.collapsed .tower-chevron{ transform:rotate(-90deg); }
+  .tower-group.collapsed .status-grid{ display:none; }
+  @media(max-width:860px){ .status-grid{ grid-template-columns:1fr; } }
+  @media(max-width:600px){ .status-summary{ grid-template-columns:1fr 1fr; } }
+  .status-card{
+    background:var(--panel); border:1px solid var(--border-soft); border-radius:10px;
+    padding:16px 18px; cursor:pointer; transition:border-color .15s, box-shadow .15s;
+  }
+  .status-card:hover{ border-color:var(--blue); box-shadow:0 2px 12px rgba(0,0,0,.15); }
+  .status-card-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .status-card-name{ font-weight:600; font-size:13px; }
+  .status-card-icon{ width:10px; height:10px; border-radius:50%; flex:0 0 auto; }
+  .status-card-icon.green{ background:var(--teal); }
+  .status-card-icon.yellow{ background:var(--amber); }
+  .status-card-icon.red{ background:var(--red); }
+  .sc-bars{ display:flex; gap:1px; margin-bottom:8px; }
+  .sc-bars .ub{ height:22px; border-radius:1px; min-width:1px; flex:1; }
+  .sc-bars .ub.green{ background:var(--teal); opacity:.7; }
+  .sc-bars .ub.yellow{ background:var(--amber); opacity:.8; }
+  .sc-bars .ub.red{ background:var(--red); opacity:.85; }
+  .sc-foot{ display:flex; justify-content:space-between; align-items:center; }
+  .sc-foot .sc-range{ font-family:var(--mono); font-size:9.5px; color:var(--text-faint); }
+  .sc-foot .sc-pct{ font-family:var(--mono); font-size:10.5px; color:var(--text-muted); font-weight:500; }
+  .sc-foot .sc-status{ font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.03em; }
+  .sc-foot .sc-status.normal{ color:var(--teal); }
+  .sc-foot .sc-status.warning{ color:var(--amber); }
+  .sc-foot .sc-status.incident{ color:var(--red); }
+
+  /* tooltip */
+  .sc-tooltip{
+    position:fixed; z-index:200; pointer-events:none;
+    background:var(--panel); border:1px solid var(--border); border-radius:8px;
+    padding:8px 11px; font-size:11px; box-shadow:0 4px 16px rgba(0,0,0,.35);
+    display:none; max-width:220px;
+  }
+  .sc-tooltip .tt-date{ font-family:var(--mono); font-size:10px; color:var(--text-faint); margin-bottom:3px; }
+  .sc-tooltip .tt-status{ font-weight:600; font-size:11px; }
+  .sc-tooltip .tt-event{ font-size:10.5px; color:var(--text-muted); margin-top:2px; }
+
+  /* detail modal */
+  .status-detail-overlay{
+    position:fixed; inset:0; z-index:300; background:rgba(0,0,0,.55);
+    display:none; align-items:flex-start; justify-content:center;
+    padding:40px 20px; overflow-y:auto;
+  }
+  .status-detail-overlay.show{ display:flex; }
+  .status-detail-box{
+    background:var(--bg); border:1px solid var(--border); border-radius:14px;
+    width:100%; max-width:640px; box-shadow:0 8px 40px rgba(0,0,0,.4);
+  }
+  .sd-head{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:18px 22px 14px; border-bottom:1px solid var(--border-soft);
+  }
+  .sd-head h2{ font-family:var(--display); font-size:15px; font-weight:700; margin:0; }
+  .sd-close{ background:none; border:none; color:var(--text-muted); font-size:18px; cursor:pointer; padding:4px 8px; border-radius:6px; }
+  .sd-close:hover{ background:var(--panel); color:var(--text); }
+  .sd-body{ padding:18px 22px 22px; }
+  .sd-status-row{ display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+  .sd-dot{ width:12px; height:12px; border-radius:50%; }
+  .sd-dot.green{ background:var(--teal); }
+  .sd-dot.yellow{ background:var(--amber); }
+  .sd-dot.red{ background:var(--red); }
+  .sd-status-label{ font-size:13px; font-weight:600; }
+  .sd-bars{ display:flex; gap:1px; margin-bottom:6px; }
+  .sd-bars .ub{ height:26px; border-radius:1px; min-width:1px; flex:1; }
+  .sd-bars .ub.green{ background:var(--teal); opacity:.7; }
+  .sd-bars .ub.yellow{ background:var(--amber); opacity:.8; }
+  .sd-bars .ub.red{ background:var(--red); opacity:.85; }
+  .sd-range{ display:flex; justify-content:space-between; font-family:var(--mono); font-size:9.5px; color:var(--text-faint); margin-bottom:18px; }
+  .sd-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px; }
+  .sd-field{ background:var(--panel); border:1px solid var(--border-soft); border-radius:8px; padding:10px 12px; }
+  .sd-field .sd-fl{ font-family:var(--mono); font-size:9.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--text-faint); margin-bottom:3px; }
+  .sd-field .sd-fv{ font-size:12.5px; font-weight:500; }
+  .sd-section-title{ font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-faint); margin:16px 0 8px; }
+  .sd-timeline{ display:flex; flex-direction:column; gap:6px; }
+  .sd-tl-item{ display:flex; align-items:flex-start; gap:8px; font-size:11.5px; }
+  .sd-tl-dot{ width:6px; height:6px; border-radius:50%; margin-top:5px; flex:0 0 auto; }
+  .sd-tl-date{ font-family:var(--mono); font-size:10px; color:var(--text-faint); min-width:70px; flex:0 0 auto; }
+  .sd-tl-text{ color:var(--text-muted); }
 
 </style>
 </head>
@@ -1453,6 +1559,7 @@
   <div class="view-tabs" id="viewTabs">
     <div class="view-tab" data-view="dashboard"><span>Dashboard</span></div>
     <div class="view-tab" data-view="equipment"><span id="txtTabEquip">Equipment Monitoring</span></div>
+    <div class="view-tab" data-view="status"><span>Uptime</span></div>
     <div class="view-tab" data-view="parts"><span id="txtTabParts">Parts Catalog</span></div>
     <div class="view-tab" data-view="pm"><span>PM Schedule</span><span class="tab-badge" id="pmTabBadge" style="display:none">0</span></div>
   </div>
@@ -1561,6 +1668,31 @@
 
     <div id="pmContent"></div>
   </section>
+
+  <section id="statusPage">
+    <div class="status-hero">
+      <h1>Equipment Status</h1>
+      <div class="sub">Real-time equipment health, reliability, and uptime monitoring</div>
+    </div>
+    <div class="status-summary" id="statusSummary"></div>
+    <div class="status-grid" id="statusGrid"></div>
+  </section>
+
+  <div class="sc-tooltip" id="scTooltip">
+    <div class="tt-date" id="ttDate"></div>
+    <div class="tt-status" id="ttStatus"></div>
+    <div class="tt-event" id="ttEvent"></div>
+  </div>
+
+  <div class="status-detail-overlay" id="statusDetailOverlay">
+    <div class="status-detail-box">
+      <div class="sd-head">
+        <h2 id="sdTitle"></h2>
+        <button class="sd-close" id="sdClose" type="button" title="Close" aria-label="Close status detail">✕</button>
+      </div>
+      <div class="sd-body" id="sdBody"></div>
+    </div>
+  </div>
 
   <section class="stats" id="statsRow"></section>
   <section class="stats" id="partsStatsRow" style="display:none"></section>
@@ -1881,21 +2013,6 @@
 </div>
 </div>
 
-
-<!--
-  This is a single self-contained file: all CSS, all JavaScript, and
-  the equipment/parts data are embedded directly below rather than
-  loaded from separate css/js/data files. Everything still works
-  exactly the same — this trades "separate files for easier editing"
-  for "one file that's simplest to upload/host anywhere," including
-  opening it straight from your filesystem (no web server required),
-  since nothing needs to be fetched anymore.
-
-  Live sync (Firestore) still works the same way it did in the
-  multi-file version — your real project credentials are embedded
-  in FIREBASE_CONFIG below. If you ever want to change them, search
-  for "FIREBASE_CONFIG" in this file.
--->
 <script>
 // ---------- Firebase project credentials ----------
 const FIREBASE_CONFIG = {
@@ -2021,39 +2138,12 @@ const EMBEDDED_EQUIPMENT_DATA = [
 ];
 const EMBEDDED_PARTS_DATA = [{"equipment": "Tower 1 - Genset", "part": "Main Breaker", "spec": "ABB Tmax XT6N 800", "qty": 1}, {"equipment": "Tower 2 - Genset", "part": "Main Breaker", "spec": "SCHNEIDER Compact NS1000N", "qty": 1}, {"equipment": "Tower 3 - Genset", "part": "Main Breaker", "spec": "SCHNEIDER Compact NS1000N", "qty": 1}, {"equipment": "Tower 4 - Genset", "part": "Main Breaker", "spec": "SCHNEIDER Compact NS1000N", "qty": 1}, {"equipment": "Pumps - Genset", "part": "Main Breaker", "spec": "ABB T6N 630", "qty": 1}, {"equipment": "Retail - Genset", "part": "Main Breaker", "spec": "ABB SACE T7S 1600", "qty": 1}, {"equipment": "T1/T2 - SPF", "part": "Main Breaker", "spec": "Fuji - BW250EAG-200A", "qty": 2}, {"equipment": "T3/T4 - SPF", "part": "Main Breaker", "spec": "Fuji - BW50EAG-50A", "qty": 3}, {"equipment": "LPF", "part": "Main Breaker", "spec": "Fuji - BW32AAG - 30A", "qty": 2}, {"equipment": "SPF", "part": "Control Circuit Breaker", "spec": "wixim C45N-C6", "qty": 7}, {"equipment": "T1/T2 - SPF", "part": "Contactor", "spec": "Fuji - SC-N4(80)", "qty": 2}, {"equipment": "T1/T2 - SPF", "part": "Contactor", "spec": "Fuji - SC-4N(80)", "qty": 2}, {"equipment": "T4/p4/T3 - SPF T1/T2-LPF", "part": "Contactor", "spec": "FUJI SC-05", "qty": 10}, {"equipment": "T3/T4 - LPF", "part": "Contactor", "spec": "FUJI SC-5-1", "qty": null}, {"equipment": "SPF/LPF", "part": "Transformer", "spec": "sakura 380-440v/110v 30VA", "qty": 4}, {"equipment": "Exhaust Fans", "part": "Main Breaker", "spec": "Fuji Electric BW32AAG - 10A", "qty": 5}, {"equipment": "Exhaust Fans", "part": "Control Circuit Breaker", "spec": "wixim C45N-C6", "qty": 5}, {"equipment": "Exhaust Fans", "part": "Contactor", "spec": "Fuji Electric SC-0", "qty": 5}, {"equipment": "Exhaust Fans", "part": "Overload Relay", "spec": "Fuji Electric TR-ON/3", "qty": 5}, {"equipment": "Transfer Pump 1,2,4 &Spare", "part": "Main Breaker", "spec": "Himel-HDM1225M 125A", "qty": 2}, {"equipment": "Transfer Pump 3", "part": "Main Breaker", "spec": "Metasol ABS 103c - 100A", "qty": 1}, {"equipment": "Transfer Pump 1,2,4 &Spare", "part": "Control Circuit Breaker", "spec": "HIMEL HDB6s C10", "qty": 2}, {"equipment": "Transfer Pump 3", "part": "Control Circuit Breaker", "spec": "HIMEL - HDB3wN-C6", "qty": 1}, {"equipment": "Transfer Pump 1,2,4 &Spare", "part": "Contactor", "spec": "HIMEL HDC6-65", "qty": 2}, {"equipment": "Transfer Pump 3", "part": "Contactor", "spec": "METASOL MC-65A", "qty": 1}, {"equipment": "Transfer Pump 1,2,3, 4 &Spare", "part": "VFD", "spec": "SCHNEIDER Altistart22 - 30KW 62A", "qty": 3}, {"equipment": "Transfer Pump 1,2,3, 4 &Spare", "part": "Contact Relay", "spec": "RXM4AB2P7 - 230VAC 6A 25VAC", "qty": 10}, {"equipment": "Transfer Pump 1,2,3, 4 &Spare", "part": "Voltage Relay", "spec": "ANLY AEVR-NH                               5A 250VAC", "qty": 5}, {"equipment": "Transfer Pump 1,2,4 &Spare", "part": "Transformer", "spec": "100 VA - YOKOYAMA - 380/400/440 To 110/100", "qty": 2}, {"equipment": "Transfer Pump 3", "part": "Transformer", "spec": "250 VA - YOKOYAMA - 380/400/440 To 110/100", "qty": 1}, {"equipment": "Tower 1 RD                     Booster Pump", "part": "Main Breaker", "spec": "FUJIKIDEN - 30A", "qty": 1}, {"equipment": "Tower 1 RD                     Booster Pump", "part": "Control Circuit Breaker", "spec": "SHIH4N - C10", "qty": 1}, {"equipment": "Tower 1 RD                     Booster Pump", "part": "Contactor", "spec": "FUJI ELECTRIC                         SC-N1", "qty": 1}, {"equipment": "Tower 1 RD                     Booster Pump", "part": "Contactor", "spec": "FUJI ELECTRIC                         SC-05", "qty": 1}, {"equipment": "Tower 1 RD                     Booster Pump", "part": "Voltage Relay", "spec": "ANLY - AEVR-NH 5A 250VAC", "qty": 1}, {"equipment": "Tower 1 RD                     Booster Pump", "part": "Transformer", "spec": "75VA - YOKOYAMA 400/240AC", "qty": 1}, {"equipment": "Tower 2 RD                     Booster Pump", "part": "Main Breaker", "spec": "CHINT - 40A MCCB", "qty": 1}, {"equipment": "Tower 2 RD                     Booster Pump", "part": "Control Circuit Breaker", "spec": "TECS 32A, TECS 10A", "qty": 1}, {"equipment": "Tower 2 RD                     Booster Pump", "part": "Contactor", "spec": "FUJI ELECTRIC                         SC-4-1", "qty": 3}, {"equipment": "Tower 2 RD                     Booster Pump", "part": "Transformer", "spec": "200VA - YOKOYAMA 400/110AC", "qty": 1}, {"equipment": "Tower 3 RD                     Booster Pump", "part": "Main Breaker", "spec": "METASOL 40A", "qty": 1}, {"equipment": "Tower 3 RD                     Booster Pump", "part": "Control Circuit Breaker", "spec": "METASOL 30A, TECS 6A", "qty": 1}, {"equipment": "Tower 3 RD                     Booster Pump", "part": "Contactor", "spec": "LS ELECTRIC -50A", "qty": 3}, {"equipment": "Tower 3 RD                     Booster Pump", "part": "Transformer", "spec": "100VA - YOKOYAMA 400/110AC", "qty": 1}, {"equipment": "Tower 4 RD                     Booster Pump", "part": "Main Breaker", "spec": "HIMEL C40", "qty": 1}, {"equipment": "Tower 4 RD                     Booster Pump", "part": "Control Circuit Breaker", "spec": "DELIXI C50, C10", "qty": 1}, {"equipment": "Tower 4 RD                     Booster Pump", "part": "Contactor", "spec": "FUJI ELECTRIC                         SC-N1", "qty": 1}, {"equipment": "Tower 4 RD                     Booster Pump", "part": "Transformer", "spec": "200VA - YOKOYAMA 400/110AC", "qty": 1}, {"equipment": "Pool pumps", "part": "Branch Circuit Breaker", "spec": "SCHNEIDER iDPN N-VIGI - C40A", "qty": 4}, {"equipment": "Pool pumps", "part": "Branch Circuit Breaker", "spec": "SCHNEIDER iDPN N-VIGI - C32A", "qty": 1}, {"equipment": "T1/T2 EDP", "part": "Main Breaker", "spec": "PEOPLE RDM1-63M 50A", "qty": 4}, {"equipment": "T1/T2 ELP", "part": "Main Breaker", "spec": "PEOPLE RDM1-63L              40A", "qty": 4}, {"equipment": "T1/T2 ELP", "part": "Main Breaker", "spec": "PEOPLE RDM1-63L          40A", "qty": 4}, {"equipment": "T1/T2 Branch CB", "part": "Branch Circuit Breaker", "spec": "PEOPLE RDX6-63 C20", "qty": 150}, {"equipment": "T3-EDP", "part": "Main Breaker", "spec": "METASOL ABN 103c 50A", "qty": 2}, {"equipment": "T3-ELP", "part": "Main Breaker", "spec": "METASOL ABN 53c           40A", "qty": 2}, {"equipment": "T3-LP", "part": "Main Breaker", "spec": "METASOL ABN 53c           40A", "qty": 2}, {"equipment": "T3 EDP Branch  CB", "part": "Branch Circuit Breaker", "spec": "METASOL ABN 52c 20A", "qty": 13}, {"equipment": "T3 ELP/LP Branch CB", "part": "Branch Circuit Breaker", "spec": "LS MCB BF51a 20A", "qty": 26}, {"equipment": "T4-EDP", "part": "Main Breaker", "spec": "PEOPLE RDM1-100L/3300 50A", "qty": 2}, {"equipment": "T4-ELP/LP", "part": "Main Breaker", "spec": "PEOPLE RDM1-100L/3300 40A", "qty": 4}, {"equipment": "T4-EDP Branch CB", "part": "Branch Circuit Breaker", "spec": "PAA-100L/1300 20A", "qty": 31}, {"equipment": "T4 ELP/LP Branch CB", "part": "Branch Circuit Breaker", "spec": "PEOPLE RDX6-63 C20", "qty": 62}, {"equipment": "STP SBR Blower", "part": "Belt", "spec": "B-62", "qty": 4}, {"equipment": "Stair Pressurization Fan Tower 1", "part": "Belt", "spec": "SPB-3600", "qty": 2}, {"equipment": "Lift Pressuriization Fan Tower 1/2", "part": "Belt", "spec": "SPA-1900", "qty": 2}, {"equipment": "Stair Pressurization Fan Tower 2", "part": "Belt", "spec": "SPB-3850", "qty": 2}, {"equipment": "Lift Pressuriization Fan Tower 3", "part": "Belt", "spec": "SPA-1950", "qty": 1}, {"equipment": "Stair Pressurization Fan Tower 3", "part": "Belt", "spec": "SPA-2800", "qty": 2}, {"equipment": "Stair Pressurization Fan  Tower 4/LPF", "part": "Belt", "spec": "SPA-1960", "qty": 3}, {"equipment": "Stair Pressurization Fan  P4 Tower 4", "part": "Belt", "spec": "SPZ-1650", "qty": 2}];
 
-/* ================= js/storage.js ================= */
-
-/* =============================================================
-   storage.js — Data Access Layer
-   =============================================================
-   Every function that reads or writes persisted data lives here.
-   This is the ONLY file that talks to window.storage / localStorage
-   or fetches the equipment/parts source data.
-
-   Why this matters for future backend integration:
-   To swap this app onto a real backend later, you only need to
-   change the bodies of the load()/save() functions in this file
-   (e.g. replace `window.storage.get(...)` with `fetch('/api/...')`).
-   No other file needs to change — every other module only calls
-   these named functions and never touches window.storage,
-   localStorage, or the raw JSON files directly.
-
-   Two storage backends are used today, both already abstracted here:
-   - window.storage: the shared, multi-user store used for equipment
-     statuses, overrides, work orders, PM/dashboard config, profiles,
-     documents, and timelines. Personal vs "shared/team" scope is
-     controlled by the `dataMode` flag.
-   - localStorage: used only for the Preventive Maintenance module's
-     checklists/engineer assignments/completion log and the reminder
-     dismissal flag, per the explicit requirement that PM data stay
-     on-device. See the PM section below for the same disclaimer
-     that used to live inline.
-   ============================================================= */
+/* ================= Data Layer ================= */
 
 let EQUIPMENT_DATA = [];
-let EQUIPMENT_DATA_BASE = [];   // raw, unmodified data/equipment.json — never mutated directly
-let equipmentAdditions = [];    // equipment added via the "Add Equipment" UI
-let equipmentDeletedIds = [];   // ids removed via the "Delete" action (soft delete)
+let EQUIPMENT_DATA_BASE = [];
+let equipmentAdditions = [];
+let equipmentDeletedIds = [];
 let PARTS_DATA = [];
 
 /**
@@ -2349,6 +2439,7 @@ function refreshCurrentView(){
   else if(currentView === 'equipment') render();
   else if(currentView === 'parts') renderParts();
   else if(currentView === 'pm') renderPmPage();
+  else if(currentView === 'status') renderStatusPage();
   const profileOverlay = document.getElementById('profileOverlay');
   if(profileOverlay && profileOverlay.style.display !== 'none' && profileEquipId){
     const it = EQUIPMENT_DATA.find(x => x.id === profileEquipId);
@@ -2472,6 +2563,255 @@ const QUICK_NOTES_KEY = 'quick-notes';
 async function loadQuickNotes(){ await syncedLoad('quickNotes', scopedKey(QUICK_NOTES_KEY), [], v => { quickNotes = v; }, sharedEnabled()); }
 async function saveQuickNotes(){ await syncedSave(scopedKey(QUICK_NOTES_KEY), quickNotes, sharedEnabled()); }
 
+const UPTIME_KEY = 'equipment-uptime';
+let uptimeHistory = {}; // { [equipId]: ['green','red','green',...] }
+let uptimeStartDates = {}; // { [equipId]: 'YYYY-MM-DD' }
+
+function getEquipmentStartDate(){
+  const today = new Date();
+  return today.getFullYear() + '-06-01';
+}
+
+function generateSimulatedUptime(item){
+  const startDate = getEquipmentStartDate(item);
+  const start = new Date(startDate + 'T00:00:00');
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const diffDays = Math.max(1, Math.round((today - start) / 86400000));
+  const numBars = Math.min(diffDays, 90);
+  const bars = [];
+  for(let i = 0; i < numBars; i++) bars.push('green');
+  return { bars, startDate };
+}
+
+function ensureUptimeHistory(){
+  let changed = false;
+  EQUIPMENT_DATA.forEach(item => {
+    if(!uptimeHistory[item.id]){
+      const result = generateSimulatedUptime(item);
+      uptimeHistory[item.id] = result.bars;
+      uptimeStartDates[item.id] = result.startDate;
+      changed = true;
+    }
+    const bars = uptimeHistory[item.id];
+    if(bars && bars.length){
+      const st = getStatus(item.id);
+      let currentColor = 'green';
+      if(st.status === 'down') currentColor = 'red';
+      else if(st.status === 'attention') currentColor = 'yellow';
+      const last = bars[bars.length - 1];
+      if(last !== currentColor){
+        bars[bars.length - 1] = currentColor;
+        changed = true;
+      }
+    }
+  });
+  if(changed) lsSet(UPTIME_KEY, uptimeHistory);
+}
+
+const UPTIME_START_KEY = 'equipment-uptime-dates';
+async function loadUptimeHistory(){
+  await syncedLoad('uptimeHistory', scopedKey(UPTIME_KEY), {}, v => { uptimeHistory = v; }, sharedEnabled());
+  await syncedLoad('uptimeStartDates', scopedKey(UPTIME_START_KEY), {}, v => { uptimeStartDates = v; }, sharedEnabled());
+  ensureUptimeHistory();
+}
+async function saveUptimeHistory(){
+  await syncedSave(scopedKey(UPTIME_KEY), uptimeHistory, sharedEnabled());
+  await syncedSave(scopedKey(UPTIME_START_KEY), uptimeStartDates, sharedEnabled());
+}
+
+function recordUptimeStatus(equipId, newStatus){
+  const bars = uptimeHistory[equipId];
+  if(!bars || !bars.length) return;
+  bars.shift();
+  if(newStatus === 'down') bars.push('red');
+  else if(newStatus === 'attention') bars.push('yellow');
+  else bars.push('green');
+  lsSet(UPTIME_KEY, uptimeHistory);
+  saveUptimeHistory();
+}
+
+
+/* ---------- Equipment Status page ---------- */
+function getStatusPageData(){
+  return EQUIPMENT_DATA.map(item => {
+    const d = getData(item);
+    const st = getStatus(item.id);
+    const bars = uptimeHistory[item.id] || [];
+    const startDate = uptimeStartDates[item.id] || '';
+    let pct;
+    if(st.status === 'down') pct = 0;
+    else if(st.status === 'attention') pct = 95;
+    else pct = 100;
+    let statusColor = 'green';
+    if(st.status === 'down') statusColor = 'red';
+    else if(st.status === 'attention') statusColor = 'yellow';
+    const pm = getMaintenanceInfo(item);
+    const history = (st.history || []).slice(-5).reverse();
+    return {
+      id: item.id, name: d.name, tower: towerOf(d), statusColor, pct, bars, startDate,
+      status: st.status, note: st.note,
+      brand: d.brand, model: d.model, type: d.type, provider: d.provider,
+      pmState: pm.state, pmNext: pm.nextDue, lastServiced: d.last_serviced,
+      history, updatedAt: st.updatedAt,
+    };
+  });
+}
+
+function renderStatusPage(){
+  const items = getStatusPageData();
+  const summary = document.getElementById('statusSummary');
+  const grid = document.getElementById('statusGrid');
+  if(!summary || !grid) return;
+  const operational = items.filter(i => i.statusColor === 'green').length;
+  const warning = items.filter(i => i.statusColor === 'yellow').length;
+  const incident = items.filter(i => i.statusColor === 'red').length;
+  const overallUptime = items.length ? Math.round((operational / items.length) * 1000) / 10 : 100;
+  summary.innerHTML = `
+    <div class="status-sum-card"><span class="ss-label">Operational</span><span class="ss-num green">${operational}</span></div>
+    <div class="status-sum-card"><span class="ss-label">Need Attention</span><span class="ss-num yellow">${warning}</span></div>
+    <div class="status-sum-card"><span class="ss-label">Down</span><span class="ss-num red">${incident}</span></div>
+    <div class="status-sum-card"><span class="ss-label">Overall Uptime</span><span class="ss-num blue">${overallUptime}%</span></div>`;
+
+  const towers = {};
+  items.forEach(it => {
+    const t = it.tower || 'Other';
+    if(!towers[t]) towers[t] = [];
+    towers[t].push(it);
+  });
+  const towerOrder = ['Tower 1','Tower 2','Tower 3','Tower 4'].filter(t => towers[t]);
+  Object.keys(towers).forEach(t => { if(!towerOrder.includes(t)) towerOrder.push(t); });
+
+  grid.innerHTML = towerOrder.map(t => {
+    const group = towers[t];
+    const cards = group.map(it => {
+      const statusLabel = it.statusColor === 'green' ? 'Normal' : it.statusColor === 'yellow' ? 'Need Attention' : 'Down';
+      const statusCls = it.statusColor === 'green' ? 'normal' : it.statusColor === 'yellow' ? 'warning' : 'incident';
+      const numBars = it.bars.length;
+      const startDateLabel = it.startDate ? fmtShortDate(new Date(it.startDate + 'T00:00:00')) : '';
+      return `
+      <div class="status-card" data-equip-id="${escapeHtml(it.id)}">
+        <div class="status-card-head">
+          <span class="status-card-name">${escapeHtml(it.name)}</span>
+          <span class="status-card-icon ${it.statusColor}"></span>
+        </div>
+        <div class="sc-bars" data-equip-id="${escapeHtml(it.id)}" data-start="${escapeHtml(it.startDate || '')}">${it.bars.map((b, i) => `<div class="ub ${b}" data-day="${numBars - i}"></div>`).join('')}</div>
+        <div class="sc-foot">
+          <span class="sc-range">${startDateLabel}</span>
+          <span class="sc-pct">${it.pct}% uptime</span>
+          <span class="sc-range">Today</span>
+        </div>
+        <div class="sc-foot" style="margin-top:4px">
+          <span class="sc-status ${statusCls}">${statusLabel}</span>
+        </div>
+      </div>`;
+    }).join('');
+    return `<div class="tower-group" data-tower="${escapeHtml(t)}"><div class="tower-group-head"><h2>${escapeHtml(t)}</h2><div class="tower-group-meta"><span class="tower-group-count">${group.length} unit${group.length === 1 ? '' : 's'}</span><svg class="tower-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></div></div><div class="status-grid">${cards}</div></div>`;
+  }).join('');
+}
+
+function openStatusDetail(equipId){
+  const items = getStatusPageData();
+  const it = items.find(i => i.id === equipId);
+  if(!it) return;
+  document.getElementById('sdTitle').textContent = it.name;
+  const statusLabel = it.statusColor === 'green' ? 'Operational' : it.statusColor === 'yellow' ? 'Need Attention' : 'Down';
+  const statusCls = it.statusColor === 'green' ? 'normal' : it.statusColor === 'yellow' ? 'warning' : 'incident';
+  const body = document.getElementById('sdBody');
+  const numBars = it.bars.length;
+  const startDateLabel = it.startDate ? fmtShortDate(new Date(it.startDate + 'T00:00:00')) : '';
+  body.innerHTML = `
+    <div class="sd-status-row">
+      <div class="sd-dot ${it.statusColor}"></div>
+      <span class="sd-status-label">${statusLabel}</span>
+    </div>
+    <div class="sd-bars" data-start="${escapeHtml(it.startDate || '')}">${it.bars.map((b, i) => `<div class="ub ${b}" data-day="${numBars - i}"></div>`).join('')}</div>
+    <div class="sd-range"><span>${startDateLabel}</span><span>Today</span></div>
+    <div class="sd-grid">
+      <div class="sd-field"><div class="sd-fl">Uptime</div><div class="sd-fv">${it.pct}%</div></div>
+      <div class="sd-field"><div class="sd-fl">Status</div><div class="sd-fv">${statusLabel}</div></div>
+      <div class="sd-field"><div class="sd-fl">Brand</div><div class="sd-fv">${escapeHtml(it.brand || '—')}</div></div>
+      <div class="sd-field"><div class="sd-fl">Model</div><div class="sd-fv">${escapeHtml(it.model || '—')}</div></div>
+      <div class="sd-field"><div class="sd-fl">Type</div><div class="sd-fv">${escapeHtml(it.type || '—')}</div></div>
+      <div class="sd-field"><div class="sd-fl">Provider</div><div class="sd-fv">${escapeHtml(it.provider || '—')}</div></div>
+      <div class="sd-field"><div class="sd-fl">Last Maintenance</div><div class="sd-fv">${it.lastServiced ? fmtShortDate(it.lastServiced) : '—'}</div></div>
+      <div class="sd-field"><div class="sd-fl">Next Scheduled PM</div><div class="sd-fv">${it.pmNext ? fmtShortDate(it.pmNext) : '—'}</div></div>
+      <div class="sd-field"><div class="sd-fl">PM Status</div><div class="sd-fv">${it.pmState === 'overdue' ? 'Overdue' : it.pmState === 'due-soon' ? 'Due Soon' : it.pmState === 'ok' ? 'On Track' : 'Unknown'}</div></div>
+      <div class="sd-field"><div class="sd-fl">Last Updated</div><div class="sd-fv">${fmtDate(it.updatedAt)}</div></div>
+    </div>
+    ${it.history.length ? `
+    <div class="sd-section-title">Recent Activity</div>
+    <div class="sd-timeline">
+      ${it.history.map(h => {
+        const dotColor = h.status === 'down' ? 'var(--red)' : h.status === 'attention' ? 'var(--amber)' : 'var(--teal)';
+        return `<div class="sd-tl-item">
+          <div class="sd-tl-dot" style="background:${dotColor}"></div>
+          <span class="sd-tl-date">${fmtDate(h.at)}</span>
+          <span class="sd-tl-text">${escapeHtml(h.note || h.status)}</span>
+        </div>`;
+      }).join('')}
+    </div>` : '<div class="sd-section-title">No recent incidents</div>'}
+    ${it.note ? `<div class="sd-section-title">Current Note</div><div style="font-size:12px;color:var(--text-muted)">${escapeHtml(it.note)}</div>` : ''}`;
+  document.getElementById('statusDetailOverlay').classList.add('show');
+}
+
+function closeStatusDetail(){
+  document.getElementById('statusDetailOverlay').classList.remove('show');
+}
+
+const STATUS_TOOLTIP_DAYS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function showStatusTooltip(e){
+  const bar = e.target.closest('.ub');
+  if(!bar) return;
+  const barsContainer = bar.closest('.sc-bars, .sd-bars');
+  if(!barsContainer) return;
+  const day = parseInt(bar.dataset.day);
+  if(isNaN(day)) return;
+  const numBars = barsContainer.querySelectorAll('.ub').length;
+  const startStr = barsContainer.dataset.start;
+  let startDate;
+  if(startStr){
+    startDate = new Date(startStr + 'T00:00:00');
+  } else {
+    startDate = new Date();
+    startDate.setDate(startDate.getDate() - numBars);
+  }
+  const date = new Date(startDate);
+  date.setDate(date.getDate() + (numBars - day));
+  const tooltip = document.getElementById('scTooltip');
+  const color = bar.classList.contains('green') ? 'Operational' : bar.classList.contains('yellow') ? 'Need Attention' : 'Down';
+  document.getElementById('ttDate').textContent = STATUS_TOOLTIP_DAYS[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
+  document.getElementById('ttStatus').textContent = color;
+  document.getElementById('ttEvent').textContent = color === 'Operational' ? 'None' : 'Status changed to ' + color.toLowerCase();
+  tooltip.style.display = 'block';
+  tooltip.style.left = (e.clientX + 12) + 'px';
+  tooltip.style.top = (e.clientY - 10) + 'px';
+}
+function hideStatusTooltip(){
+  document.getElementById('scTooltip').style.display = 'none';
+}
+
+document.getElementById('sdClose').addEventListener('click', closeStatusDetail);
+document.getElementById('statusDetailOverlay').addEventListener('click', e => {
+  if(e.target.id === 'statusDetailOverlay') closeStatusDetail();
+});
+document.addEventListener('mouseover', showStatusTooltip);
+document.addEventListener('mouseout', e => {
+  if(e.target.closest('.sc-bars, .sd-bars')) hideStatusTooltip();
+});
+document.addEventListener('mousemove', e => {
+  const tooltip = document.getElementById('scTooltip');
+  if(tooltip.style.display === 'block'){
+    tooltip.style.left = (e.clientX + 12) + 'px';
+    tooltip.style.top = (e.clientY - 10) + 'px';
+  }
+});
+document.addEventListener('click', e => {
+  const card = e.target.closest('.status-card');
+  if(card){ openStatusDetail(card.dataset.equipId); return; }
+  const towerHead = e.target.closest('.tower-group-head');
+  if(towerHead){ towerHead.closest('.tower-group').classList.toggle('collapsed'); return; }
+});
 const PROFILE_KEY = 'equipment-profiles';
 const TIMELINE_KEY = 'equipment-timeline';
 const DOCUMENTS_KEY = 'equipment-documents';
@@ -2537,22 +2877,7 @@ async function loadEquipmentDeletions(){
 async function saveEquipmentDeletions(){ await syncedSave(EQUIPMENT_DELETIONS_KEY, equipmentDeletedIds, !!db); }
 
 
-/* ================= js/equipment.js ================= */
-
-/* =============================================================
-   equipment.js — Equipment Monitoring + Equipment Profile
-   =============================================================
-   Owns: the Equipment Monitoring list (stats, filters, tower/
-   category tabs, plate & compact-row rendering, inline edit,
-   status cycling, note/log entries) and the Equipment Profile
-   modal (Overview / Maintenance / Failure / Inspection / Parts
-   Used / Documents tabs, criticality, QR code, related parts).
-
-   Depends on: storage.js (state, persistence, EQUIPMENT_DATA,
-   PARTS_DATA, canEdit/isAdmin, core helpers). Loaded via a plain
-   <script> tag (not an ES module) so it shares storage.js's global
-   scope directly — see index.html for load order.
-   ============================================================= */
+/* ================= Equipment Monitoring + Profile ================= */
 
 /* ---------- status mutation ---------- */
 async function setStatus(id, patch){
@@ -2563,6 +2888,7 @@ async function setStatus(id, patch){
   const history = [...(current.history || [])];
   if(patch.status && patch.status !== current.status){
     history.push({ status: nextStatus, note: current.note || '', at: now });
+    recordUptimeStatus(id, patch.status);
   }
   statuses[id] = { ...current, ...patch, history, updatedAt: now };
   render();
@@ -3285,20 +3611,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-
-
-/* ================= js/inventory.js ================= */
-
-/* =============================================================
-   inventory.js — Parts Catalog
-   =============================================================
-   Owns: the Parts Catalog view — search/filter by part type,
-   stats row, and section/row rendering.
-
-   Depends on: storage.js (PARTS_DATA, PART_TYPE_ORDER,
-   PART_TYPE_NUMERAL, escapeHtml, collapsedPartSections,
-   activePartType, partsSearchTerm).
-   ============================================================= */
+/* ================= Parts Catalog ================= */
 
 /* ---------- parts catalog: filtering ---------- */
 function partsMatches(item){
@@ -3388,19 +3701,7 @@ function renderParts(){
 
 
 
-/* ================= js/workorders.js ================= */
-
-/* =============================================================
-   workorders.js — Work Orders
-   =============================================================
-   Owns: the "New Work Order" / "Report Breakdown" modal, its form
-   state, and cycling a work order's status (open -> waiting on
-   contractor -> closed). Triggered from the Dashboard's Quick
-   Actions and KPI cards (see dashboard.js's click handler).
-
-   Depends on: storage.js (workOrders state + saveWorkOrders,
-   EQUIPMENT_DATA, getData, setStatus for breakdown auto-flagging).
-   ============================================================= */
+/* ================= Work Orders ================= */
 
 let woModalType = 'workorder';
 async function cycleWorkOrderStatus(id){
@@ -3459,7 +3760,7 @@ async function submitWoModal(){
 
 /* ---------- defective parts modal ---------- */
 const ELEVATOR_PARTS = [
-  'Hoisting Rope Recutting','Governor Rope','Synchronous Belt','MELD Battery (4 pcs)',
+  'Hoisting Rope','Recutting','Governor Rope','Synchronous Belt','MELD Battery (4 pcs)',
   'Traction Sheave','Car Suspension Sheave Bearing','Counter Weight Sheave Bearing',
   'Governor Tension Sheave Bearing','Car Door Pivot Arm Bearing','SDE Pivot Arm Bearing',
   'Synchronous Pulley','Counter Weight Solid Guide Shoe','Car Guide Shoe FIBRA',
@@ -3621,31 +3922,7 @@ async function deleteNote(id){
 
 
 
-/* ================= js/maintenance.js ================= */
-
-/* =============================================================
-   maintenance.js — Preventive Maintenance module
-   =============================================================
-   Owns: the PM Schedule page — Calendar (month/week), Today's PM,
-   Upcoming PM, Overdue PM, the PM detail modal (checklist, engineer
-   assignment, estimated time, Mark Complete), the PM compliance
-   KPIs, and the automatic due/overdue reminder banner + nav badge.
-
-   NOTE: PM checklists, engineer assignments, and the completion log
-   persist to the browser's localStorage (see storage.js's
-   lsGet/lsSet/loadPmDetails/savePmDetails/logPmCompletion) rather
-   than the shared window.storage backend the rest of the app uses —
-   this was an explicit requirement, so this data is per-device.
-   Reminders are in-app only: a static page has no backend to send
-   email/push/SMS, so the banner and badge simply appear whenever
-   someone has the app open.
-
-   Depends on: storage.js (state, persistence, EQUIPMENT_DATA,
-   getData, getMaintenanceInfo, pmIntervalDays, canEdit/isAdmin,
-   overrides + saveOverrides, timelines + saveTimelines — completing
-   a PM logs an entry straight into the equipment's Profile
-   Maintenance History via equipment.js's shared `timelines` state).
-   ============================================================= */
+/* ================= Preventive Maintenance ================= */
 
 /* ---------- PM domain helpers ---------- */
 function getPmDetail(id){
@@ -4101,22 +4378,7 @@ document.addEventListener('keydown', (e) => {
 
 
 
-/* ================= js/dashboard.js ================= */
-
-/* =============================================================
-   dashboard.js — Dashboard (landing page)
-   =============================================================
-   Owns: KPI cards, morning brief, critical alerts panel, critical
-   systems overview, tower health, recent activity feed, and the
-   dashboard's own click/keydown handling (including opening the
-   Work Order modal, which is defined in workorders.js).
-
-   Depends on: storage.js, equipment.js (getData/getStatus/towerOf/
-   getMaintenanceInfo/jumpToEquipmentItem target elements),
-   workorders.js (openWoModal/closeWoModal/submitWoModal/
-   cycleWorkOrderStatus), maintenance.js (not directly called here,
-   but PM-related dashboard KPIs route into it via app.js's setView).
-   ============================================================= */
+/* ================= Dashboard ================= */
 
 /* ---------- critical systems + KPI icon constants ---------- */
 const CRITICAL_SYSTEMS = [
@@ -4616,22 +4878,14 @@ document.addEventListener('keydown', (e) => {
   if(e.key === 'Escape' && document.getElementById('notesListOverlay').style.display !== 'none'){
     closeNotesList();
   }
+  if(e.key === 'Escape' && document.getElementById('statusDetailOverlay').classList.contains('show')){
+    closeStatusDetail();
+  }
 });
 
 
 
-/* ================= js/reports.js ================= */
-
-/* =============================================================
-   reports.js — Export / Reporting
-   =============================================================
-   Owns: the Export menu (Download Excel, Print/Save as PDF) for
-   the Equipment Monitoring and Parts Catalog views.
-
-   Depends on: storage.js (EQUIPMENT_DATA, PARTS_DATA, getData,
-   getStatus, getMaintenanceInfo, textSettings), the global XLSX
-   library (loaded via CDN in index.html).
-   ============================================================= */
+/* ================= Export / Reporting ================= */
 
 /* ---------- export ---------- */
 function toggleExportMenu(force){
@@ -4692,26 +4946,7 @@ function exportPrint(){
 }
 
 
-
-/* ================= js/app.js ================= */
-
-/* =============================================================
-   app.js — Application shell: bootstrap, routing, login
-   =============================================================
-   Owns: login/role-gate wiring, the Settings ("Edit text") modal,
-   view switching (setView) between Dashboard/Equipment/Parts/PM,
-   the top-level render() dispatcher, the clock, the single
-   delegated click handler that drives most of the UI (status
-   buttons, chip filters, inline edit, compact/team-data toggles,
-   section collapse, export menu, settings), the shared search-input
-   listener (routes to Equipment or Parts search depending on the
-   active view), switchDataMode (personal vs shared, reloads every
-   feature's data), and app init.
-
-   This file is loaded LAST (see index.html) so every function it
-   calls from the other modules already exists in the shared global
-   scope by the time its top-level login-button listeners attach.
-   ============================================================= */
+/* ================= App Shell / Routing ================= */
 
 /* ---------- login / role-based access ---------- */
 function selectLoginRole(role){
@@ -4809,10 +5044,12 @@ function setView(view, opts){
   const isEquip = view === 'equipment';
   const isParts = view === 'parts';
   const isPm = view === 'pm';
+  const isStatus = view === 'status';
 
   document.getElementById('dashboardPage').classList.toggle('showing', isDash);
   document.getElementById('pmPage').classList.toggle('showing', isPm);
-  document.getElementById('appBody').style.display = (isDash || isPm) ? 'none' : '';
+  document.getElementById('statusPage').classList.toggle('showing', isStatus);
+  document.getElementById('appBody').style.display = (isDash || isPm || isStatus) ? 'none' : '';
   document.getElementById('statsRow').style.display = isEquip ? '' : 'none';
   document.getElementById('partsStatsRow').style.display = isParts ? '' : 'none';
   document.getElementById('uptimeBlock').style.display = isEquip ? '' : 'none';
@@ -4840,6 +5077,7 @@ function setView(view, opts){
   if(isDash) renderDashboard();
   else if(isEquip) render();
   else if(isPm){ if(opts.pmSubview) pmActiveSubview = opts.pmSubview; renderPmPage(); }
+  else if(isStatus) renderStatusPage();
   else renderParts();
 
   updatePmFilterBanner();
@@ -5050,9 +5288,6 @@ document.addEventListener('keydown', (e) => {
     e.preventDefault();
     logout();
   }
-});
-
-document.addEventListener('keydown', (e) => {
   if(e.target.id === 'compactToggleWrap' && (e.key === 'Enter' || e.key === ' ')){
     e.preventDefault();
     toggleCompactView();
@@ -5083,9 +5318,11 @@ async function switchDataMode(){
   document.getElementById('teamBanner').style.display = isShared ? 'flex' : 'none';
   editingIds.clear();
   closeProfileModal();
-  await Promise.all([loadStatuses(), loadOverrides(), loadCriticalSystems(), loadWorkOrders(), loadDefectiveParts(), loadQuickNotes(), loadProfiles(), loadTimelines(), loadDocuments()]);
+  await Promise.all([loadStatuses(), loadOverrides(), loadCriticalSystems(), loadWorkOrders(), loadDefectiveParts(), loadQuickNotes(), loadUptimeHistory(), loadProfiles(), loadTimelines(), loadDocuments()]);
+  ensureUptimeHistory();
   if(currentView === 'dashboard') renderDashboard();
   else if(currentView === 'equipment') render();
+  else if(currentView === 'status') renderStatusPage();
   else renderParts();
 }
 
@@ -5123,9 +5360,11 @@ document.addEventListener('input', (e) => {
   await Promise.all([
     loadStatuses(), loadOverrides(), loadTextSettings(),
     loadCriticalSystems(), loadWorkOrders(), loadDefectiveParts(), loadQuickNotes(),
+    loadUptimeHistory(),
     loadProfiles(), loadTimelines(), loadDocuments(),
     loadPmDetails(), loadEquipmentAdditions(), loadEquipmentDeletions(),
   ]);
+  ensureUptimeHistory();
   applyTextSettings();
   document.getElementById('teamToggleWrap').setAttribute('aria-checked', String(dataMode === 'shared'));
   document.getElementById('teamToggle').classList.toggle('on', dataMode === 'shared');
@@ -5168,5 +5407,8 @@ scrollTopBtn.addEventListener('click', () => {
 });
 
 </script>
+<button class="scroll-top" id="scrollTopBtn" type="button" title="Scroll to top" aria-label="Scroll to top">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
 </body>
 </html>
